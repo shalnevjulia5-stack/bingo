@@ -1,0 +1,3754 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="artifact-type" content="tool">
+  <meta name="design-style" content="neon_noir">
+  <title>מעבדת הזמן של פרופ' סיגמא | בינגו ראשוניים - חדר בריחה</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&family=Rubik:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      color-scheme: dark;
+
+      /* Page and surfaces - Neon Noir electric nightscape */
+      --background: #080812;
+      --surface-container-low: #0f0f1f;
+      --surface-container: #15152a;
+      --surface-container-high: #1e1e38;
+      --surface-container-highest: #28284c;
+
+      /* Text tokens */
+      --on-surface: #f1ecf7;
+      --on-surface-variant: #a79cb8;
+      --on-surface-muted: #726884;
+
+      /* Borders and lines */
+      --outline: #473e61;
+      --outline-variant: #26203a;
+
+      /* Neon brand accents */
+      --neon-cyan: #00f0ff;
+      --neon-cyan-glow: rgba(0, 240, 255, 0.35);
+      --neon-gold: #ffbe1a;
+      --neon-gold-glow: rgba(255, 190, 26, 0.4);
+      --neon-magenta: #ff2a85;
+      --neon-magenta-glow: rgba(255, 42, 133, 0.35);
+      --neon-green: #00ff9d;
+      --neon-green-glow: rgba(0, 255, 157, 0.35);
+      --neon-purple: #9d4edd;
+
+      /* Semantic tokens */
+      --primary: var(--neon-cyan);
+      --accent-gold: var(--neon-gold);
+      --positive: var(--neon-green);
+      --warning: #ffaa00;
+      --error: #ff3366;
+      --focus: var(--neon-cyan);
+
+      /* Typography */
+      --font-headline: 'Rubik', sans-serif;
+      --font-body: 'Heebo', sans-serif;
+      --font-label: 'Rubik', monospace;
+
+      --display-size: clamp(1.8rem, 1.2rem + 2.2vw, 2.75rem);
+      --headline-size: clamp(1.3rem, 1.05rem + 1vw, 1.85rem);
+      --subhead-size: clamp(1.05rem, 0.95rem + 0.4vw, 1.3rem);
+      --body-size: clamp(0.92rem, 0.88rem + 0.15vw, 1.02rem);
+      --label-size: clamp(0.72rem, 0.7rem + 0.1vw, 0.82rem);
+
+      /* Spacing scale */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2.5rem;
+      --space-2xl: 4rem;
+
+      /* Radii */
+      --radius-sm: 6px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+      --radius-xl: 24px;
+      --radius-full: 9999px;
+
+      /* Motion */
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+      --dur-micro: 120ms;
+      --dur-short: 240ms;
+      --dur-long: 450ms;
+    }
+
+    /* Base Reset */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      background-color: var(--background);
+      color: var(--on-surface);
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.55;
+      overflow-x: clip;
+      min-height: 100vh;
+      direction: rtl;
+    }
+
+    /* Background futuristic grid */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image: 
+        linear-gradient(to right, rgba(70, 60, 100, 0.08) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(70, 60, 100, 0.08) 1px, transparent 1px);
+      background-size: 36px 36px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Accessibility focus */
+    :focus-visible {
+      outline: 2px solid var(--focus);
+      outline-offset: 2px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+
+    /* App Wrapper */
+    .app-shell {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: var(--space-sm) var(--space-md) var(--space-xl);
+    }
+
+    /* Header & Control Center */
+    .app-header {
+      background: rgba(21, 21, 42, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--outline-variant);
+      border-radius: var(--radius-lg);
+      padding: var(--space-md) var(--space-lg);
+      margin-bottom: var(--space-md);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .header-top {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-md);
+      margin-bottom: var(--space-md);
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+    }
+
+    .brand-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+      border-radius: var(--radius-md);
+      display: grid;
+      place-items: center;
+      color: #05050f;
+      font-size: 26px;
+      box-shadow: 0 0 16px var(--neon-cyan-glow);
+      flex-shrink: 0;
+    }
+
+    .brand-titles h1 {
+      font-family: var(--font-headline);
+      font-size: var(--headline-size);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .brand-titles h1 span {
+      background: linear-gradient(90deg, var(--neon-cyan), var(--neon-gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-subtitle {
+      font-size: var(--label-size);
+      color: var(--on-surface-variant);
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    /* Control widgets: Timer & Power Gauge */
+    .header-widgets {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-md);
+    }
+
+    /* 45-min Timer Badge */
+    .timer-card {
+      background: var(--surface-container-low);
+      border: 1px solid var(--outline);
+      border-radius: var(--radius-md);
+      padding: var(--space-xs) var(--space-md);
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+    }
+
+    .timer-display {
+      font-family: var(--font-label);
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--neon-cyan);
+      letter-spacing: 2px;
+      text-shadow: 0 0 10px var(--neon-cyan-glow);
+      min-width: 90px;
+      text-align: center;
+    }
+
+    .timer-display.timer-danger {
+      color: var(--error);
+      text-shadow: 0 0 12px rgba(255, 51, 102, 0.6);
+      animation: pulse-danger 1s infinite alternate;
+    }
+
+    @keyframes pulse-danger {
+      from { opacity: 0.8; }
+      to { opacity: 1; transform: scale(1.03); }
+    }
+
+    .timer-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-xs);
+    }
+
+    .btn-icon {
+      background: var(--surface-container-high);
+      border: 1px solid var(--outline);
+      color: var(--on-surface);
+      border-radius: var(--radius-sm);
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: background var(--dur-micro) var(--ease-out), border-color var(--dur-micro);
+    }
+
+    .btn-icon:hover {
+      background: var(--surface-container-highest);
+      border-color: var(--neon-cyan);
+      color: var(--neon-cyan);
+    }
+
+    /* Golden Engine Power Gauge */
+    .power-gauge-card {
+      background: var(--surface-container-low);
+      border: 1px solid var(--outline);
+      border-radius: var(--radius-md);
+      padding: var(--space-xs) var(--space-md);
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      min-width: 170px;
+    }
+
+    .power-gauge-label {
+      font-size: 0.74rem;
+      font-family: var(--font-headline);
+      color: var(--neon-gold);
+      display: flex;
+      justify-content: space-between;
+      font-weight: 600;
+    }
+
+    .power-bar-track {
+      width: 100%;
+      height: 10px;
+      background: rgba(255, 190, 26, 0.15);
+      border: 1px solid rgba(255, 190, 26, 0.3);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .power-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--neon-gold), #ff8800);
+      width: 0%;
+      box-shadow: 0 0 10px var(--neon-gold-glow);
+      transition: width var(--dur-long) var(--ease-out);
+    }
+
+    /* Sound and Help Toggles */
+    .utility-btns {
+      display: flex;
+      gap: var(--space-xs);
+    }
+
+    /* Navigation Bar */
+    .nav-tabs-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-sm);
+      border-top: 1px solid var(--outline-variant);
+      padding-top: var(--space-md);
+    }
+
+    .nav-tab-btn {
+      background: var(--surface-container-low);
+      border: 1px solid var(--outline);
+      color: var(--on-surface-variant);
+      font-family: var(--font-headline);
+      font-size: var(--body-size);
+      font-weight: 500;
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      transition: all var(--dur-short) var(--ease-out);
+      min-height: 44px;
+    }
+
+    .nav-tab-btn:hover {
+      background: var(--surface-container);
+      color: var(--on-surface);
+      border-color: var(--neon-cyan);
+    }
+
+    .nav-tab-btn.active {
+      background: rgba(0, 240, 255, 0.12);
+      border-color: var(--neon-cyan);
+      color: #ffffff;
+      font-weight: 700;
+      box-shadow: 0 0 14px rgba(0, 240, 255, 0.25);
+    }
+
+    .nav-tab-btn.accent-gold.active {
+      background: rgba(255, 190, 26, 0.15);
+      border-color: var(--neon-gold);
+      color: #ffffff;
+      box-shadow: 0 0 14px var(--neon-gold-glow);
+    }
+
+    .nav-tab-badge {
+      font-size: 0.72rem;
+      background: var(--surface-container-highest);
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      color: var(--neon-cyan);
+    }
+
+    /* Main View Area */
+    .view-container {
+      display: none;
+    }
+
+    .view-container.active {
+      display: block;
+      animation: fadeIn var(--dur-short) var(--ease-out);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ==========================================================
+       VIEW 1: TEAM VIEW (לוח בינגו + מעטפות)
+       ========================================================== */
+    .team-view-layout {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    /* Team Selector Ribbon */
+    .team-selector-ribbon {
+      background: var(--surface-container);
+      border: 1px solid var(--outline-variant);
+      border-radius: var(--radius-lg);
+      padding: var(--space-sm);
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: var(--space-sm);
+    }
+
+    .team-pill-btn {
+      background: var(--surface-container-low);
+      border: 1px solid var(--outline);
+      border-radius: var(--radius-md);
+      padding: var(--space-sm) var(--space-md);
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      color: var(--on-surface-variant);
+      cursor: pointer;
+      text-align: right;
+      transition: all var(--dur-short) var(--ease-out);
+      min-height: 52px;
+    }
+
+    .team-pill-btn:hover {
+      background: var(--surface-container-high);
+      color: var(--on-surface);
+      border-color: var(--neon-cyan);
+    }
+
+    .team-pill-btn.active {
+      background: linear-gradient(135deg, rgba(0, 240, 255, 0.18), rgba(157, 78, 221, 0.18));
+      border-color: var(--neon-cyan);
+      color: #fff;
+      box-shadow: 0 0 16px rgba(0, 240, 255, 0.28);
+    }
+
+    .team-avatar {
+      font-size: 1.5rem;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .team-info {
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .team-name {
+      font-family: var(--font-headline);
+      font-size: 0.88rem;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .team-meta {
+      font-size: 0.72rem;
+      color: var(--on-surface-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .team-pill-btn.active .team-meta {
+      color: var(--neon-cyan);
+    }
+
+    .team-status-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--outline);
+      flex-shrink: 0;
+    }
+
+    .team-status-indicator.ready {
+      background: var(--neon-green);
+      box-shadow: 0 0 8px var(--neon-green-glow);
+    }
+
+    /* 2-Column Board & Envelope Chamber */
+    .gameplay-columns {
+      display: grid;
+      grid-template-columns: minmax(320px, 420px) minmax(0, 1fr);
+      gap: var(--space-md);
+      align-items: start;
+    }
+
+    @media (max-width: 990px) {
+      .gameplay-columns {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    /* Bingo Board Panel */
+    .bingo-board-panel {
+      background: var(--surface-container);
+      border: 1px solid var(--outline);
+      border-radius: var(--radius-lg);
+      padding: var(--space-md);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .panel-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--outline-variant);
+      padding-bottom: var(--space-sm);
+    }
+
+    .panel-title {
+      font-family: var(--font-headline);
+      font-size: var(--subhead-size);
+      font-weight: 700;
+      color: var(--on-surface);
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .board-badge {
+      background: rgba(0, 240, 255, 0.15);
+      border: 1px solid var(--neon-cyan);
+      color: var(--neon-cyan);
+      font-size: 0.75rem;
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+      font-family: var(--font-label);
+      font-weight: 700;
+    }
+
+    /* 4x4 Bingo Grid */
+    .bingo-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      width: 100%;
+      aspect-ratio: 1;
+      padding: var(--space-xs);
+    }
+
+    .bingo-cell {
+      background: var(--surface-container-low);
+      border: 1.5px solid var(--outline);
+      border-radius: var(--radius-md);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      cursor: default;
+      user-select: none;
+      transition: all var(--dur-short) var(--ease-out);
+      overflow: hidden;
+    }
+
+    .bingo-cell::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, rgba(0, 240, 255, 0.15), transparent 70%);
+      opacity: 0;
+      transition: opacity var(--dur-short);
+    }
+
+    .bingo-cell-prime {
+      font-family: var(--font-label);
+      font-size: clamp(1.2rem, 1.8vw, 1.6rem);
+      font-weight: 800;
+      color: var(--on-surface);
+      letter-spacing: 0.5px;
+      z-index: 1;
+      transition: all var(--dur-short);
+    }
+
+    .bingo-cell-coord {
+      font-size: 0.62rem;
+      color: var(--on-surface-muted);
+      position: absolute;
+      bottom: 4px;
+      right: 6px;
+      font-family: var(--font-label);
+    }
+
+    /* Lit state */
+    .bingo-cell.lit {
+      background: rgba(0, 255, 157, 0.16);
+      border-color: var(--neon-green);
+      box-shadow: 0 0 14px var(--neon-green-glow);
+    }
+
+    .bingo-cell.lit::before {
+      opacity: 1;
+    }
+
+    .bingo-cell.lit .bingo-cell-prime {
+      color: var(--neon-green);
+      text-shadow: 0 0 10px var(--neon-green-glow);
+      transform: scale(1.08);
+    }
+
+    /* Winning Bingo line state */
+    .bingo-cell.bingo-winner {
+      background: linear-gradient(135deg, rgba(255, 190, 26, 0.3), rgba(255, 42, 133, 0.25));
+      border-color: var(--neon-gold);
+      box-shadow: 0 0 20px var(--neon-gold-glow);
+      animation: pulse-bingo 1.6s infinite alternate;
+    }
+
+    .bingo-cell.bingo-winner .bingo-cell-prime {
+      color: #ffffff;
+      text-shadow: 0 0 12px var(--neon-gold);
+    }
+
+    @keyframes pulse-bingo {
+      from { box-shadow: 0 0 12px var(--neon-gold-glow); }
+      to { box-shadow: 0 0 24px rgba(255, 190, 26, 0.8); }
+    }
+
+    /* Bingo Key Revelation Capsule */
+    .bingo-key-card {
+      background: linear-gradient(135deg, rgba(255, 190, 26, 0.12), rgba(0, 240, 255, 0.08));
+      border: 1px dashed var(--outline);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      text-align: center;
+      transition: all var(--dur-long) var(--ease-out);
+    }
+
+    .bingo-key-card.unlocked {
+      border: 2px solid var(--neon-gold);
+      background: linear-gradient(135deg, rgba(255, 190, 26, 0.22), rgba(255, 42, 133, 0.15));
+      box-shadow: 0 0 24px var(--neon-gold-glow);
+    }
+
+    .bingo-key-title {
+      font-size: var(--label-size);
+      font-weight: 700;
+      color: var(--on-surface-variant);
+      text-transform: uppercase;
+      margin-bottom: var(--space-xs);
+    }
+
+    .bingo-key-card.unlocked .bingo-key-title {
+      color: var(--neon-gold);
+    }
+
+    .secret-digit-capsule {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 72px;
+      height: 72px;
+      background: var(--surface-container-low);
+      border: 2px solid var(--outline);
+      border-radius: var(--radius-md);
+      font-family: var(--font-label);
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: var(--on-surface-muted);
+      margin: var(--space-xs) auto;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.5);
+    }
+
+    .bingo-key-card.unlocked .secret-digit-capsule {
+      border-color: var(--neon-gold);
+      color: var(--neon-gold);
+      text-shadow: 0 0 16px var(--neon-gold-glow);
+      background: var(--surface-container-highest);
+      animation: popIn var(--dur-long) var(--ease-out);
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.6) rotate(-8deg); }
+      70% { transform: scale(1.15) rotate(4deg); }
+      100% { transform: scale(1) rotate(0); }
+    }
+
+    .bingo-key-desc {
+      font-size: 0.78rem;
+      color: var(--on-surface-variant);
+    }
+
+    /* Envelopes & Questions Chamber */
+    .riddle-chamber {
+      background: var(--surface-container);
+      border: 1px solid var(--outline);
+      border-radius: var(--radius-lg);
+      padding: var(--space-md) var(--space-lg);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    /* Envelope Selector Bar */
+    .envelope-tabs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-sm);
+    }
+
+    @media (max-width: 640px) {
+      .envelope-tabs {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .envelope-btn {
+      background: var(--surface-container-low);
+      border: 1px solid var(--outline);
+      border-radius: var(--radius-md);
+      padding: var(--space-sm);
+      color: var(--on-surface-variant);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      transition: all var(--dur-short) var(--ease-out);
+      text-align: right;
+    }
+
+    .envelope-btn:hover {
+      border-color: var(--neon-cyan);
+      color: var(--on-surface);
+      background: var(--surface-container-high);
+    }
+
+    .envelope-btn.active {
+      border-color: var(--neon-cyan);
+      background: rgba(0, 240, 255, 0.12);
+      color: #fff;
+      box-shadow: 0 0 14px rgba(0, 240, 255, 0.22);
+    }
+
+    .envelope-btn.completed {
+      border-color: var(--neon-green);
+      background: rgba(0, 255, 157, 0.08);
+    }
+
+    .envelope-btn.completed .env-title {
+      color: var(--neon-green);
+    }
+
+    .env-num {
+      font-size: 0.68rem;
+      font-family: var(--font-label);
+      color: var(--on-surface-muted);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .env-title {
+      font-family: var(--font-headline);
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+
+    .env-progress-tag {
+      font-size: 0.7rem;
+      font-family: var(--font-label);
+      color: var(--neon-cyan);
+    }
+
+    /* Envelope Info Banner */
+    .envelope-banner {
+      background: var(--surface-container-low);
+      border-right: 4px solid var(--neon-cyan);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      padding: var(--space-sm) var(--space-md);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-md);
+    }
+
+    .envelope-banner-text h3 {
+      font-family: var(--font-headline);
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .envelope-banner-text p {
+      font-size: 0.82rem;
+      color: var(--on-surface-variant);
+    }
+
+    /* Riddle Cards Stack */
+    .riddles-stack {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .riddle-card {
+      background: var(--surface-container-low);
+      border: 1px solid var(--outline);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      transition: border-color var(--dur-short), box-shadow var(--dur-short);
+    }
+
+    .riddle-card.solved {
+      border-color: rgba(0, 255, 157, 0.5);
+      background: linear-gradient(180deg, rgba(0, 255, 157, 0.05), rgba(15, 15, 31, 0.95));
+    }
+
+    .riddle-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-xs);
+    }
+
+    .riddle-tag {
+      font-family: var(--font-label);
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--neon-cyan);
+      background: rgba(0, 240, 255, 0.1);
+      padding: 2px 8px;
+      border-radius: var(--radius-sm);
+    }
+
+    .riddle-solved-badge {
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--neon-green);
+      display: none;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .riddle-card.solved .riddle-solved-badge {
+      display: inline-flex;
+    }
+
+    .riddle-body {
+      font-size: var(--body-size);
+      color: var(--on-surface);
+      margin-bottom: var(--space-sm);
+      line-height: 1.6;
+    }
+
+    .riddle-math-highlight {
+      background: var(--surface-container-high);
+      border: 1px solid var(--outline-variant);
+      border-radius: var(--radius-sm);
+      padding: var(--space-xs) var(--space-sm);
+      font-size: 0.88rem;
+      color: var(--neon-gold);
+      margin-bottom: var(--space-sm);
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    /* Input & Action Row */
+    .riddle-input-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: end;
+      gap: var(--space-sm);
+    }
+
+    .input-field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1;
+      min-width: 130px;
+    }
+
+    .input-label {
+      font-size: 0.72rem;
+      font-family: var(--font-headline);
+      color: var(--on-surface-variant);
+      font-weight: 600;
+    }
+
+    .prime-input {
+      background: var(--surface-container-high);
+      border: 1px solid var(--outline);
+      border-radius: var(--radius-sm);
+      color: #fff;
+      font-family: var(--font-label);
+      font-size: 1.1rem;
+      padding: 8px 12px;
+      width: 100%;
+      height: 44px;
+      transition: border-color var(--dur-micro);
+      text-align: center;
+    }
+
+    .prime-input:focus {
+      border-color: var(--neon-cyan);
+    }
+
+    .prime-input:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      border-color: var(--outline-variant);
+    }
+
+    .btn-verify {
+      background: var(--neon-cyan);
+      color: #050512;
+      font-family: var(--font-headline);
+      font-weight: 700;
+      font-size: 0.88rem;
+      border: none;
+      border-radius: var(--radius-sm);
+      height: 44px;
+      padding: 0 var(--space-md);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+      transition: all var(--dur-short) var(--ease-out);
+      white-space: nowrap;
+    }
+
+    .btn-verify:hover:not(:disabled) {
+      background: #73f6ff;
+      box-shadow: 0 0 14px var(--neon-cyan-glow);
+    }
+
+    .btn-verify:disabled {
+      background: var(--surface-container-high);
+      color: var(--on-surface-muted);
+      cursor: not-allowed;
+    }
+
+    .btn-hint-trigger {
+      background: var(--surface-container-high);
+      border: 1px solid var(--outline);
+      color: var(--neon-gold);
+      font-family: var(--font-headline);
+      font-size: 0.82rem;
+      font-weight: 600;
+      height: 44px;
+      padding: 0 var(--space-sm);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+      transition: all var(--dur-short);
+      white-space: nowrap;
+    }
+
+    .btn-hint-trigger:hover {
+      border-color: var(--neon-gold);
+      background: rgba(255, 190, 26, 0.12);
+      box-shadow: 0 0 10px var(--neon-gold-glow);
+    }
+
+    .feedback-msg {
+      font-size: 0.82rem;
+      margin-top: var(--space-xs);
+      display: none;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .feedback-msg.show-success {
+      display: flex;
+      color: var(--neon-green);
+    }
+
+    .feedback-msg.show-error {
+      display: flex;
+      color: var(--error);
+    }
+
+    /* ==========================================================
+       VIEW 2: MASTER DASHBOARD (מסך בקרה כיתתי)
+       ========================================================== */
+    .master-dashboard-layout {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-lg);
+    }
+
+    /* Central Vault Section */
+    .central-vault-container {
+      background: linear-gradient(180deg, var(--surface-container), var(--surface-container-low));
+      border: 2px solid var(--neon-gold);
+      border-radius: var(--radius-xl);
+      padding: var(--space-lg);
+      box-shadow: 0 0 40px rgba(255, 190, 26, 0.18), inset 0 0 20px rgba(0, 0, 0, 0.6);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .vault-status-ribbon {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+      background: rgba(255, 190, 26, 0.12);
+      border: 1px solid var(--neon-gold);
+      border-radius: var(--radius-full);
+      padding: 4px 14px;
+      font-family: var(--font-label);
+      font-size: 0.8rem;
+      color: var(--neon-gold);
+      margin-bottom: var(--space-sm);
+    }
+
+    .vault-heading {
+      font-family: var(--font-headline);
+      font-size: var(--headline-size);
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: var(--space-xs);
+    }
+
+    .vault-subheading {
+      font-size: var(--body-size);
+      color: var(--on-surface-variant);
+      max-width: 65ch;
+      margin: 0 auto var(--space-lg);
+    }
+
+    /* 6-Digit Secret Lock Dials */
+    .secret-lock-grid {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: var(--space-md);
+      margin-bottom: var(--space-lg);
+    }
+
+    .lock-dial-card {
+      background: var(--surface-container-low);
+      border: 2px solid var(--outline);
+      border-radius: var(--radius-md);
+      padding: var(--space-sm);
+      width: 100px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      transition: all var(--dur-short);
+    }
+
+    .lock-dial-card.has-digit {
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 16px var(--neon-cyan-glow);
+    }
+
+    .dial-team-label {
+      font-size: 0.72rem;
+      font-family: var(--font-headline);
+      color: var(--on-surface-variant);
+      font-weight: 600;
+    }
+
+    .dial-input-box {
+      width: 60px;
+      height: 64px;
+      background: var(--surface-container-high);
+      border: 1px solid var(--outline-variant);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-label);
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--neon-cyan);
+      text-align: center;
+      transition: all var(--dur-micro);
+    }
+
+    .dial-input-box:focus {
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 10px var(--neon-cyan-glow);
+    }
+
+    .dial-team-avatar {
+      font-size: 1.1rem;
+    }
+
+    /* Vault Trigger Actions */
+    .vault-actions-group {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: var(--space-md);
+    }
+
+    .btn-launch-vault {
+      background: linear-gradient(135deg, var(--neon-gold), #ff8800);
+      color: #050512;
+      border: none;
+      border-radius: var(--radius-full);
+      font-family: var(--font-headline);
+      font-size: 1.15rem;
+      font-weight: 800;
+      padding: var(--space-sm) var(--space-xl);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-sm);
+      box-shadow: 0 0 24px var(--neon-gold-glow);
+      transition: all var(--dur-short) var(--ease-out);
+      min-height: 52px;
+    }
+
+    .btn-launch-vault:hover {
+      transform: scale(1.04);
+      box-shadow: 0 0 34px rgba(255, 190, 26, 0.7);
+    }
+
+    .btn-sync-digits {
+      background: var(--surface-container-high);
+      border: 1px solid var(--outline);
+      color: var(--on-surface);
+      border-radius: var(--radius-full);
+      font-family: var(--font-headline);
+      font-size: 0.92rem;
+      font-weight: 600;
+      padding: var(--space-sm) var(--space-lg);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+      transition: all var(--dur-short);
+      min-height: 52px;
+    }
+
+    .btn-sync-digits:hover {
+      border-color: var(--neon-cyan);
+      color: var(--neon-cyan);
+    }
+
+    /* Teams Monitoring Grid */
+    .monitoring-grid-title {
+      font-family: var(--font-headline);
+      font-size: var(--subhead-size);
+      font-weight: 700;
+      color: var(--on-surface);
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .monitoring-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: var(--space-md);
+    }
+
+    .monitor-card {
+      background: var(--surface-container);
+      border: 1px solid var(--outline);
+      border-radius: var(--radius-lg);
+      padding: var(--space-md);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+      position: relative;
+      overflow: hidden;
+      transition: border-color var(--dur-short);
+    }
+
+    .monitor-card.has-bingo {
+      border-color: var(--neon-green);
+      box-shadow: 0 0 20px var(--neon-green-glow);
+    }
+
+    .monitor-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .monitor-identity {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .monitor-avatar {
+      font-size: 1.6rem;
+    }
+
+    .monitor-title {
+      font-family: var(--font-headline);
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    .monitor-subtitle {
+      font-size: 0.72rem;
+      color: var(--on-surface-muted);
+    }
+
+    .monitor-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: var(--radius-full);
+      font-family: var(--font-label);
+    }
+
+    .monitor-badge.waiting {
+      background: var(--surface-container-high);
+      color: var(--on-surface-variant);
+    }
+
+    .monitor-badge.bingo-ready {
+      background: rgba(0, 255, 157, 0.2);
+      border: 1px solid var(--neon-green);
+      color: var(--neon-green);
+      box-shadow: 0 0 8px var(--neon-green-glow);
+    }
+
+    .monitor-progress-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.76rem;
+      color: var(--on-surface-variant);
+    }
+
+    .monitor-mini-bar {
+      width: 100%;
+      height: 6px;
+      background: var(--surface-container-high);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+
+    .monitor-mini-bar-fill {
+      height: 100%;
+      background: var(--neon-cyan);
+      transition: width var(--dur-short);
+    }
+
+    .monitor-secret-row {
+      background: var(--surface-container-low);
+      border-radius: var(--radius-sm);
+      padding: var(--space-xs) var(--space-sm);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.82rem;
+    }
+
+    .monitor-secret-num {
+      font-family: var(--font-label);
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: var(--neon-gold);
+    }
+
+    .btn-quick-inspect {
+      background: var(--surface-container-high);
+      border: 1px solid var(--outline-variant);
+      color: var(--on-surface-variant);
+      border-radius: var(--radius-sm);
+      padding: 6px var(--space-sm);
+      font-size: 0.76rem;
+      font-family: var(--font-headline);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      transition: all var(--dur-micro);
+    }
+
+    .btn-quick-inspect:hover {
+      color: var(--neon-cyan);
+      border-color: var(--neon-cyan);
+    }
+
+    /* ==========================================================
+       VIEW 3: KAPPA'S DREIDEL (סביבון הרמזים של קאפה)
+       ========================================================== */
+    .dreidel-view-layout {
+      display: grid;
+      grid-template-columns: minmax(320px, 420px) minmax(0, 1fr);
+      gap: var(--space-lg);
+      align-items: start;
+    }
+
+    @media (max-width: 900px) {
+      .dreidel-view-layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .dreidel-spinner-card {
+      background: var(--surface-container);
+      border: 1px solid var(--outline);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      text-align: center;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-md);
+    }
+
+    .dreidel-illustration-area {
+      position: relative;
+      width: 220px;
+      height: 220px;
+      display: grid;
+      place-items: center;
+      margin: var(--space-md) auto;
+    }
+
+    /* 3D Dreidel Object */
+    .dreidel-cube-stage {
+      width: 140px;
+      height: 140px;
+      perspective: 800px;
+    }
+
+    .dreidel-body-3d {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 3s cubic-bezier(0.12, 0.8, 0.3, 1);
+    }
+
+    .dreidel-face {
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      background: linear-gradient(135deg, rgba(255, 190, 26, 0.25), rgba(15, 15, 31, 0.95));
+      border: 2px solid var(--neon-gold);
+      border-radius: var(--radius-md);
+      box-shadow: 0 0 20px var(--neon-gold-glow);
+      display: grid;
+      place-items: center;
+      font-family: var(--font-headline);
+      font-size: 3.5rem;
+      font-weight: 900;
+      color: var(--neon-gold);
+      text-shadow: 0 0 16px var(--neon-gold-glow);
+      user-select: none;
+    }
+
+    .dreidel-tip-svg {
+      position: absolute;
+      bottom: -32px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 32px;
+      height: 32px;
+    }
+
+    .dreidel-handle-svg {
+      position: absolute;
+      top: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 30px;
+    }
+
+    .btn-spin-dreidel {
+      background: linear-gradient(135deg, var(--neon-gold), #ff9900);
+      color: #050512;
+      border: none;
+      border-radius: var(--radius-full);
+      font-family: var(--font-headline);
+      font-size: 1.1rem;
+      font-weight: 800;
+      padding: var(--space-sm) var(--space-xl);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-sm);
+      box-shadow: 0 0 20px var(--neon-gold-glow);
+      transition: all var(--dur-short) var(--ease-out);
+      min-height: 48px;
+    }
+
+    .btn-spin-dreidel:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px rgba(255, 190, 26, 0.7);
+    }
+
+    .dreidel-result-badge {
+      font-size: 0.85rem;
+      color: var(--on-surface-variant);
+      min-height: 24px;
+    }
+
+    /* Hints Output Board */
+    .dreidel-hint-panel {
+      background: var(--surface-container);
+      border: 1px solid var(--outline);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .hint-riddle-selector {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .select-riddle-dropdown {
+      background: var(--surface-container-high);
+      border: 1px solid var(--outline);
+      border-radius: var(--radius-sm);
+      color: #fff;
+      font-family: var(--font-headline);
+      font-size: 0.92rem;
+      padding: 10px 14px;
+      height: 44px;
+      cursor: pointer;
+    }
+
+    .select-riddle-dropdown:focus {
+      border-color: var(--neon-cyan);
+    }
+
+    /* 4 Principles Reference Card */
+    .principles-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-sm);
+    }
+
+    .principle-item {
+      background: var(--surface-container-low);
+      border: 1px solid var(--outline-variant);
+      border-radius: var(--radius-sm);
+      padding: var(--space-sm);
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-sm);
+      transition: all var(--dur-short);
+    }
+
+    .principle-item.active-letter {
+      border-color: var(--neon-gold);
+      background: rgba(255, 190, 26, 0.12);
+      box-shadow: 0 0 12px var(--neon-gold-glow);
+    }
+
+    .principle-char {
+      font-family: var(--font-headline);
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: var(--neon-gold);
+      line-height: 1;
+      width: 28px;
+    }
+
+    .principle-text h4 {
+      font-family: var(--font-headline);
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .principle-text p {
+      font-size: 0.72rem;
+      color: var(--on-surface-variant);
+    }
+
+    /* Active Hint Speech Box */
+    .kappa-speech-card {
+      background: linear-gradient(135deg, rgba(157, 78, 221, 0.12), rgba(0, 240, 255, 0.08));
+      border: 1px solid var(--neon-purple);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      position: relative;
+    }
+
+    .kappa-speech-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-xs);
+    }
+
+    .kappa-avatar-sm {
+      font-size: 1.5rem;
+    }
+
+    .kappa-speech-header h3 {
+      font-family: var(--font-headline);
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--neon-purple);
+    }
+
+    .kappa-hint-content {
+      font-size: 0.95rem;
+      color: #fff;
+      line-height: 1.6;
+    }
+
+    /* ==========================================================
+       VIEW 4: MISSION & RULES (מדריך וסיפור מסגרת)
+       ========================================================== */
+    .mission-story-layout {
+      background: var(--surface-container);
+      border: 1px solid var(--outline);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-lg);
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .story-hero-section {
+      border-bottom: 1px solid var(--outline-variant);
+      padding-bottom: var(--space-md);
+    }
+
+    .story-hero-section h2 {
+      font-family: var(--font-headline);
+      font-size: var(--headline-size);
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: var(--space-xs);
+    }
+
+    .story-hero-section p {
+      font-size: var(--body-size);
+      color: var(--on-surface-variant);
+      line-height: 1.7;
+    }
+
+    .characters-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: var(--space-sm);
+    }
+
+    .char-card {
+      background: var(--surface-container-low);
+      border: 1px solid var(--outline-variant);
+      border-radius: var(--radius-md);
+      padding: var(--space-sm);
+      text-align: center;
+    }
+
+    .char-card-emoji {
+      font-size: 2rem;
+      margin-bottom: 4px;
+    }
+
+    .char-card-name {
+      font-family: var(--font-headline);
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: #fff;
+    }
+
+    .char-card-role {
+      font-size: 0.7rem;
+      color: var(--on-surface-muted);
+    }
+
+    .rules-list-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: var(--space-md);
+    }
+
+    .rule-box {
+      background: var(--surface-container-low);
+      border: 1px solid var(--outline-variant);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+    }
+
+    .rule-box h4 {
+      font-family: var(--font-headline);
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--neon-cyan);
+      margin-bottom: var(--space-xs);
+      display: flex;
+      align-items: center;
+      gap: var(--space-xs);
+    }
+
+    .rule-box p {
+      font-size: 0.85rem;
+      color: var(--on-surface-variant);
+      line-height: 1.6;
+    }
+
+    .teacher-controls-card {
+      background: var(--surface-container-low);
+      border: 1px dashed var(--outline);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-md);
+    }
+
+    .teacher-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+    }
+
+    .btn-secondary {
+      background: var(--surface-container-high);
+      border: 1px solid var(--outline);
+      color: var(--on-surface);
+      font-family: var(--font-headline);
+      font-size: 0.82rem;
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 40px;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--neon-cyan);
+      color: var(--neon-cyan);
+    }
+
+    .btn-danger {
+      background: rgba(255, 51, 102, 0.15);
+      border: 1px solid var(--error);
+      color: var(--error);
+      font-family: var(--font-headline);
+      font-size: 0.82rem;
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 40px;
+    }
+
+    .btn-danger:hover {
+      background: var(--error);
+      color: #fff;
+    }
+
+    /* ==========================================================
+       VICTORY & LAUNCH MODAL (סיום ושיגור לגלקסיית החירות)
+       ========================================================== */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(4, 4, 10, 0.88);
+      backdrop-filter: blur(14px);
+      z-index: 9999;
+      display: none;
+      place-items: center;
+      padding: var(--space-md);
+    }
+
+    .modal-overlay.active {
+      display: grid;
+      animation: modalFadeIn var(--dur-long) var(--ease-out);
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .victory-modal-card {
+      background: linear-gradient(180deg, var(--surface-container-high), var(--surface-container-low));
+      border: 2px solid var(--neon-gold);
+      border-radius: var(--radius-xl);
+      max-width: 680px;
+      width: 100%;
+      padding: var(--space-xl);
+      box-shadow: 0 0 50px var(--neon-gold-glow), 0 20px 40px rgba(0,0,0,0.8);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .victory-star-icon {
+      font-size: 3.5rem;
+      line-height: 1;
+      margin-bottom: var(--space-xs);
+      animation: floatBadge 2s infinite ease-in-out alternate;
+    }
+
+    @keyframes floatBadge {
+      from { transform: translateY(0); }
+      to { transform: translateY(-8px); }
+    }
+
+    .victory-title {
+      font-family: var(--font-headline);
+      font-size: var(--display-size);
+      font-weight: 900;
+      color: #fff;
+      margin-bottom: var(--space-xs);
+    }
+
+    .victory-subtitle {
+      font-family: var(--font-headline);
+      font-size: var(--subhead-size);
+      color: var(--neon-gold);
+      font-weight: 700;
+      margin-bottom: var(--space-md);
+    }
+
+    .victory-body {
+      font-size: var(--body-size);
+      color: var(--on-surface-variant);
+      line-height: 1.7;
+      margin-bottom: var(--space-lg);
+    }
+
+    .certificate-capsule {
+      background: var(--surface-container-low);
+      border: 1px dashed var(--neon-cyan);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      margin-bottom: var(--space-lg);
+      text-align: center;
+    }
+
+    .certificate-capsule h4 {
+      font-family: var(--font-headline);
+      color: var(--neon-cyan);
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .certificate-capsule p {
+      font-size: 0.85rem;
+      color: var(--on-surface-muted);
+    }
+
+    .modal-btn-close {
+      background: var(--neon-gold);
+      color: #050512;
+      border: none;
+      border-radius: var(--radius-full);
+      font-family: var(--font-headline);
+      font-size: 1rem;
+      font-weight: 800;
+      padding: var(--space-sm) var(--space-xl);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+      box-shadow: 0 0 20px var(--neon-gold-glow);
+      min-height: 48px;
+    }
+
+    /* Confetti Canvas */
+    #confetti-canvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 10000;
+    }
+
+    /* Toast Notification */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 10001;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+    }
+
+    .toast-msg {
+      background: var(--surface-container-high);
+      border: 1px solid var(--neon-cyan);
+      color: #fff;
+      border-radius: var(--radius-md);
+      padding: 10px 18px;
+      font-size: 0.88rem;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+      animation: toastSlideIn var(--dur-short) var(--ease-out);
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    @keyframes toastSlideIn {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Fullscreen Particle / Confetti Canvas -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <div class="app-shell">
+
+    <!-- Header & Mission Control -->
+    <header class="app-header">
+      <div class="header-top">
+        <div class="brand-group">
+          <div class="brand-icon" aria-hidden="true">Σ</div>
+          <div class="brand-titles">
+            <h1>מעבדת הזמן <span>בינגו ראשוניים</span></h1>
+            <div class="brand-subtitle">
+              <span>מסע אל גלקסיית התבונה והחירות</span>
+              <span>•</span>
+              <span>פרופ' סיגמא & קאפה האלפקה</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="header-widgets">
+          <!-- 45-Min Escape Timer -->
+          <div class="timer-card">
+            <div>
+              <div style="font-size: 0.68rem; color: var(--on-surface-variant); font-family: var(--font-headline); font-weight: 600;">טיימר מילוט</div>
+              <div id="timer-display" class="timer-display">45:00</div>
+            </div>
+            <div class="timer-actions">
+              <button id="btn-timer-toggle" class="btn-icon" title="הפעל / השהה" onclick="toggleTimer()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="icon-timer-toggle"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              </button>
+              <button class="btn-icon" title="איפוס טיימר" onclick="resetTimer()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Golden Engine Charge Gauge -->
+          <div class="power-gauge-card">
+            <div class="power-gauge-label">
+              <span>מנוע הזהב</span>
+              <span id="power-percentage">0%</span>
+            </div>
+            <div class="power-bar-track">
+              <div id="power-bar-fill" class="power-bar-fill"></div>
+            </div>
+          </div>
+
+          <!-- Sound & Audio Controls -->
+          <div class="utility-btns">
+            <button id="btn-sound-toggle" class="btn-icon" title="הפעל / השתק צלילים" onclick="toggleSound()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="icon-sound"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="nav-tabs-bar" aria-label="ניווט ראשי באפליקציה">
+        <button id="tab-btn-team" class="nav-tab-btn active" onclick="switchMainView('team')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M3 9h18M3 15h18M9 3v18M15 3v18"></path></svg>
+          <span>לוח קבוצה & מעטפות</span>
+        </button>
+
+        <button id="tab-btn-master" class="nav-tab-btn accent-gold" onclick="switchMainView('master')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          <span>מסך בקרה כיתתי (כספת מרכזית)</span>
+          <span id="master-bingo-count-badge" class="nav-tab-badge">0 / 6 פוצחו</span>
+        </button>
+
+        <button id="tab-btn-dreidel" class="nav-tab-btn" onclick="switchMainView('dreidel')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"></polygon><line x1="12" y1="2" x2="12" y2="22"></line></svg>
+          <span>סביבון הרמזים של קאפה (נ-ג-ה-פ)</span>
+        </button>
+
+        <button id="tab-btn-story" class="nav-tab-btn" onclick="switchMainView('story')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg>
+          <span>יומן מסע והנחיות</span>
+        </button>
+      </nav>
+    </header>
+
+    <!-- =========================================================
+         VIEW 1: TEAM VIEW (לוח בינגו 4x4 + 4 מעטפות)
+         ========================================================= -->
+    <main id="view-team" class="view-container active">
+      <div class="team-view-layout">
+
+        <!-- 6 Team Selectors -->
+        <div class="team-selector-ribbon" role="tablist" aria-label="בחירת קבוצה">
+          <!-- Populated by JavaScript -->
+        </div>
+
+        <!-- 2 Columns: Bingo Board & Riddles Stack -->
+        <div class="gameplay-columns">
+          
+          <!-- Column A: 4x4 Bingo Board -->
+          <section class="bingo-board-panel" aria-labelledby="bingo-board-title">
+            <div class="panel-header-row">
+              <div class="panel-title" id="bingo-board-title">
+                <span id="current-team-icon" class="team-avatar">🐼</span>
+                <span id="current-team-board-name">לוח בינגו קבוצה 1</span>
+              </div>
+              <div id="board-line-status-badge" class="board-badge">קו 0 / 1 הושלם</div>
+            </div>
+
+            <!-- The 4x4 Grid -->
+            <div id="bingo-grid-element" class="bingo-grid" role="grid" aria-label="לוח בינגו 4 על 4">
+              <!-- 16 Cells rendered by JS -->
+            </div>
+
+            <!-- Key Digit Unlocked Capsule -->
+            <div id="bingo-key-card" class="bingo-key-card">
+              <div class="bingo-key-title" id="key-capsule-status-text">🔒 נעול - השלימו קו בינגו (שורה, טור או אלכסון)</div>
+              <div id="secret-key-capsule" class="secret-digit-capsule">?</div>
+              <div class="bingo-key-desc" id="key-capsule-hint">פתרו חידות במעטפות. עם השלמת קו בינגו ראשון תחשף ספרת הכספת של קבוצתכם!</div>
+            </div>
+          </section>
+
+          <!-- Column B: 4 Envelopes & Riddle Chamber -->
+          <section class="riddle-chamber" aria-labelledby="envelopes-title">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <h2 id="envelopes-title" style="font-family: var(--font-headline); font-size: 1.15rem; font-weight: 700; color: #fff;">
+                מעטפות המשימה (20 חידות ראשוניים)
+              </h2>
+              <span id="team-solved-counter" style="font-family: var(--font-label); font-size: 0.85rem; color: var(--neon-cyan);">
+                0 / 20 פוצחו
+              </span>
+            </div>
+
+            <!-- Envelope Selector Tabs -->
+            <div class="envelope-tabs" role="tablist">
+              <button id="env-tab-1" class="envelope-btn active" onclick="switchEnvelope(1)">
+                <div class="env-num"><span>מעטפה 1</span><span id="env-badge-1">0/5</span></div>
+                <div class="env-title">אתחול מערכות</div>
+              </button>
+              <button id="env-tab-2" class="envelope-btn" onclick="switchEnvelope(2)">
+                <div class="env-num"><span>מעטפה 2</span><span id="env-badge-2">0/5</span></div>
+                <div class="env-title">כיול השער</div>
+              </button>
+              <button id="env-tab-3" class="envelope-btn" onclick="switchEnvelope(3)">
+                <div class="env-num"><span>מעטפה 3</span><span id="env-badge-3">0/5</span></div>
+                <div class="env-title">מנוע הזהב</div>
+              </button>
+              <button id="env-tab-4" class="envelope-btn" onclick="switchEnvelope(4)">
+                <div class="env-num"><span>מעטפה 4</span><span id="env-badge-4">0/5</span></div>
+                <div class="env-title">שיגור חופש</div>
+              </button>
+            </div>
+
+            <!-- Envelope Header Info -->
+            <div id="active-envelope-banner" class="envelope-banner">
+              <div class="envelope-banner-text">
+                <h3 id="env-banner-title">מעטפה 1: אתחול מערכות הזמן</h3>
+                <p id="env-banner-desc">פתרו את 5 חידות המספרים הראשוניים כדי להפעיל את קווי הניווט בלוח הבינגו.</p>
+              </div>
+            </div>
+
+            <!-- Riddle Cards Stack for Current Envelope -->
+            <div id="riddles-stack-container" class="riddles-stack">
+              <!-- 5 Riddle cards for the selected envelope populated by JS -->
+            </div>
+          </section>
+
+        </div>
+      </div>
+    </main>
+
+    <!-- =========================================================
+         VIEW 2: MASTER DASHBOARD (מסך בקרה כיתתי)
+         ========================================================= -->
+    <section id="view-master" class="view-container">
+      <div class="master-dashboard-layout">
+        
+        <!-- Central Safe / Time Vault Card -->
+        <div class="central-vault-container">
+          <div class="vault-status-ribbon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            מנעול הכספת המרכזית • 6 ספרות מילוט
+          </div>
+          <h2 class="vault-heading">כספת זמן מרכזית & מנוע הזהב של הכיתה</h2>
+          <p class="vault-subheading">
+            על כל קבוצה להשלים קו בינגו (שורה, טור או אלכסון) כדי לחשוף את ספרת המפתח הסודית שלה.
+            כאשר כל 6 הספרות מוזנות במדויק ומנוע הזהב טעון — שיגור החופש לגלקסיית התבונה ייפתח!
+          </p>
+
+          <!-- 6 Lock Dials -->
+          <div class="secret-lock-grid" id="master-lock-dials-grid">
+            <!-- 6 lock dials rendered by JS -->
+          </div>
+
+          <div class="vault-actions-group">
+            <button class="btn-launch-vault" onclick="attemptMasterUnlock()">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              <span>פרוץ כספת ושגר לגלקסיית החירות 🚀</span>
+            </button>
+            <button class="btn-sync-digits" onclick="autoSyncRevealedDigits()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"></path></svg>
+              <span>סנכרן ספרות שנחשפו בלוחות</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 6 Teams Monitoring Grid -->
+        <div>
+          <div class="monitoring-grid-title" style="margin-bottom: var(--space-md);">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            סטטוס חוקרי הזמן בזמן אמת (6 קבוצות)
+          </div>
+          <div id="master-monitoring-grid" class="monitoring-grid">
+            <!-- 6 Monitor cards rendered by JS -->
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =========================================================
+         VIEW 3: KAPPA'S DREIDEL (סביבון הרמזים של קאפה)
+         ========================================================= -->
+    <section id="view-dreidel" class="view-container">
+      <div class="dreidel-view-layout">
+        
+        <!-- Dreidel Spin Stage -->
+        <div class="dreidel-spinner-card">
+          <div style="display: flex; align-items: center; gap: var(--space-xs); color: var(--neon-gold); font-family: var(--font-headline); font-weight: 700;">
+            <span style="font-size: 1.4rem;">🦙</span>
+            <span>פרוטוקול עזרת קאפה האלפקה</span>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--on-surface-variant); max-width: 38ch;">
+            קבוצה שנתקעה מרימה יד ומסובבת את סביבון הרמזים (נ-ג-ה-פ) לקבלת הנחיה מתמטית ממוקדת!
+          </p>
+
+          <div class="dreidel-illustration-area">
+            <div class="dreidel-cube-stage">
+              <div id="dreidel-3d-box" class="dreidel-body-3d">
+                <div id="dreidel-front-face" class="dreidel-face">נ</div>
+              </div>
+            </div>
+            <!-- Dreidel Tip SVG -->
+            <svg class="dreidel-tip-svg" viewBox="0 0 32 32">
+              <polygon points="16 32 0 0 32 0" fill="#ffbe1a" opacity="0.9"></polygon>
+            </svg>
+            <!-- Dreidel Handle SVG -->
+            <svg class="dreidel-handle-svg" viewBox="0 0 20 30">
+              <rect x="6" y="0" width="8" height="30" rx="3" fill="#ffbe1a"></rect>
+            </svg>
+          </div>
+
+          <button id="btn-spin-dreidel" class="btn-spin-dreidel" onclick="spinKappaDreidel()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"></path></svg>
+            <span>סובב את סביבון קאפה!</span>
+          </button>
+
+          <div id="dreidel-result-text" class="dreidel-result-badge">
+            לחצו לסיבוב הסביבון כדי לקבל אות רמז
+          </div>
+        </div>
+
+        <!-- Hint Guidance Board -->
+        <div class="dreidel-hint-panel">
+          <div class="hint-riddle-selector">
+            <label for="hint-riddle-select" class="input-label">בחרו את החידה עבורה מבוקש רמז:</label>
+            <select id="hint-riddle-select" class="select-riddle-dropdown" onchange="updateKappaHintSpeech()">
+              <!-- 20 questions populated by JS -->
+            </select>
+          </div>
+
+          <!-- 4 Principles Grid -->
+          <div class="principles-grid">
+            <div id="principle-card-N" class="principle-item">
+              <div class="principle-char">נ'</div>
+              <div class="principle-text">
+                <h4>נסו כיוון הפוך</h4>
+                <p>עבודה מסוף החידה להתחלה, בדיקת השאריות ובדיקת תנאי הסיום.</p>
+              </div>
+            </div>
+
+            <div id="principle-card-G" class="principle-item">
+              <div class="principle-char">ג'</div>
+              <div class="principle-text">
+                <h4>גישה נכונה</h4>
+                <p>אישור כיוון חשיבה מתמטי, בדיקת זוגיות, סימני התחלקות ותכונות ראשוניים.</p>
+              </div>
+            </div>
+
+            <div id="principle-card-H" class="principle-item">
+              <div class="principle-char">ה'</div>
+              <div class="principle-text">
+                <h4>הארה</h4>
+                <p>חשיפת עובדת מפתח מתמטית או קשר ישיר לחידות שנלמדו השנה.</p>
+              </div>
+            </div>
+
+            <div id="principle-card-P" class="principle-item">
+              <div class="principle-char">פ'</div>
+              <div class="principle-text">
+                <h4>פירוק לשלבים</h4>
+                <p>חלוקת האתגר למשימות קטנות, רישום מועמדים ואלימינציה שיטתית.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Active Hint Message Box -->
+          <div class="kappa-speech-card">
+            <div class="kappa-speech-header">
+              <span class="kappa-avatar-sm">🦙</span>
+              <h3 id="kappa-hint-title">העצה של קאפה האלפקה</h3>
+            </div>
+            <div id="kappa-hint-body" class="kappa-hint-content">
+              סובבו את הסביבון כדי לקבל את הנחיית קאפה המותאמת לחידה הנבחרת!
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =========================================================
+         VIEW 4: MISSION BRIEFING & RULES (יומן מסע והנחיות)
+         ========================================================= -->
+    <section id="view-story" class="view-container">
+      <div class="mission-story-layout">
+        
+        <div class="story-hero-section">
+          <h2>סיפור המסגרת: המסע לגלקסיית התבונה והחירות</h2>
+          <p>
+            ברוכים הבאים למעבדת הזמן של פרופסור סיגמא, קאפה האלפקה וצוות חוקרי הזמן!
+            אומיקרון הנבל נעל את מנוע הזמן בתוך כספת סודית בעלת קוד נעילה בן 6 ספרות.
+            כדי לשגר את הכיתה כולה אל חופשת הקיץ ואל גלקסיית התבונה, עלינו לפתור 20 חידות ראשוניים המחולקות ל-4 מעטפות,
+            להשלים קווי בינגו בלוחות הקבוצתיים, ולאחד את 6 ספרות הקוד במנעול המרכזי.
+          </p>
+        </div>
+
+        <!-- 6 Heroes Strip -->
+        <div>
+          <h3 style="font-family: var(--font-headline); font-size: 1rem; color: #fff; margin-bottom: var(--space-sm);">גיבורי המסע והקבוצות</h3>
+          <div class="characters-strip">
+            <div class="char-card">
+              <div class="char-card-emoji">🐼</div>
+              <div class="char-card-name">פאיצ'יק הפנדה</div>
+              <div class="char-card-role">מומחה סדרות ומספרים</div>
+            </div>
+            <div class="char-card">
+              <div class="char-card-emoji">🦌</div>
+              <div class="char-card-name">דלתא האיילה</div>
+              <div class="char-card-role">אלופת גאומטריה ומרחב</div>
+            </div>
+            <div class="char-card">
+              <div class="char-card-emoji">🦔</div>
+              <div class="char-card-name">למדא הקיפוד</div>
+              <div class="char-card-role">מפענח צפנים ואלגוריתמים</div>
+            </div>
+            <div class="char-card">
+              <div class="char-card-emoji">🦙</div>
+              <div class="char-card-name">קאפה האלפקה</div>
+              <div class="char-card-role">מלווה רמזים ומנטור</div>
+            </div>
+            <div class="char-card">
+              <div class="char-card-emoji">👨‍🔬</div>
+              <div class="char-card-name">פרופ' סיגמא</div>
+              <div class="char-card-role">מנהל המעבדה ומכונת הזמן</div>
+            </div>
+            <div class="char-card">
+              <div class="char-card-emoji">🚀</div>
+              <div class="char-card-name">חוקרי העתיד</div>
+              <div class="char-card-role">צוות הנווטים הראשי</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rules Grid -->
+        <div class="rules-list-grid">
+          <div class="rule-box">
+            <h4>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+              4 מעטפות משימה
+            </h4>
+            <p>בכל מעטפה 5 חידות מתמטיות. כל תשובה נכונה היא מספר ראשוני ייחודי מתוך 36 הראשוניים הראשונים (עד 151).</p>
+          </div>
+
+          <div class="rule-box">
+            <h4>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M3 9h18M9 3v18"></path></svg>
+              לוח בינגו 4x4 ייחודי
+            </h4>
+            <p>לכל קבוצה לוח עם 16 מספרים ראשוניים. פתרון נכון מדליק את המשבצת בלוח. השלמת קו (שורה, טור או אלכסון) חושפת ספרת מפתח!</p>
+          </div>
+
+          <div class="rule-box">
+            <h4>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              מנוע הזהב & טיימר 45 דק'
+            </h4>
+            <p>כל חידה פתורה טוענת 5% במנוע הזהב הכיתתי (20 חידות = 100% טעינה מלאה). הטיימר סופר 45 דקות לסיום המילוט.</p>
+          </div>
+
+          <div class="rule-box">
+            <h4>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"></polygon></svg>
+              פרוטוקול עזרת קאפה
+            </h4>
+            <p>זקוקים לרמז? סובבו את סביבון קאפה: נ (הפוך), ג (גישה נכונה), ה (הארה), או פ (פירוק לשלבים) כדי לקבל הכוונה ממוקדת.</p>
+          </div>
+        </div>
+
+        <!-- Teacher Toolbox / Sandbox Controls -->
+        <div class="teacher-controls-card">
+          <div>
+            <h4 style="font-family: var(--font-headline); font-size: 0.95rem; color: #fff;">ארגז כלים והגדרות למורה</h4>
+            <p style="font-size: 0.8rem; color: var(--on-surface-muted);">בדיקה מהירה, הדגמת שיגור ואיפוס מצב השיעור לקראת כיתה חדשה.</p>
+          </div>
+          <div class="teacher-actions">
+            <button class="btn-secondary" onclick="demoUnlockAllBingo()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+              <span>מצב הדגמה (מילוי אוטומטי של בינגו)</span>
+            </button>
+            <button class="btn-danger" onclick="confirmResetAll()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+              <span>איפוס מלא של המשחק</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+
+  <!-- =========================================================
+       VICTORY & LAUNCH MODAL (גלקסיית התבונה והחירות)
+       ========================================================= -->
+  <div id="victory-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="victory-modal-title">
+    <div class="victory-modal-card">
+      <div class="victory-star-icon" aria-hidden="true">🌌</div>
+      <h2 id="victory-modal-title" class="victory-title">השיגור הושלם בהצלחה!</h2>
+      <div class="victory-subtitle">מנוע הזהב הגיע ל-100% • הכספת המרכזית נפתחה!</div>
+      
+      <p class="victory-body">
+        כל הכבוד לכל 6 צוותי המחקר של פרופסור סיגמא וקאפה!
+        פיצחתם את כל 20 חידות המספרים הראשוניים, השלמתם את רצפי הבינגו, והזנתם את קוד המילוט הסודי:
+        <strong style="color: var(--neon-gold); font-family: var(--font-label); font-size: 1.3rem; letter-spacing: 2px;">7 4 2 9 5 8</strong>.
+        מכונת הזמן נחתה ביעד המיוחל: <strong>גלקסיית התבונה, הידע והחירות — חופשת קיץ נפלאה!</strong>
+      </p>
+
+      <div class="certificate-capsule">
+        <h4>תעודת חוקרי זמן מוסמכים למתמטיקה</h4>
+        <p>מוענקת בגאווה לכל תלמידי הכיתה על שיתוף פעולה, חשיבה לוגית מעמיקה ומצוינות מתמטית.</p>
+      </div>
+
+      <button class="modal-btn-close" onclick="closeVictoryModal()">
+        <span>חזרה למעבדה</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Toast Notification Node -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- State persistence shim placeholder -->
+  <api-shim></api-shim>
+
+  <!-- =========================================================
+       APPLICATION LOGIC & SOUND SYNTHESIS SCRIPT
+       ========================================================= -->
+  <script>
+    /* ==========================================================
+       1. DATA STRUCTURES: TEAMS, QUESTIONS & BOARDS
+       ========================================================== */
+
+    // 20 Math prime riddle questions (5 per envelope)
+    // All 20 answers are verified distinct prime numbers!
+    const QUESTIONS_DATA = [
+      // ENVELOPE 1: אתחול מערכות הזמן (חידות 1-5)
+      {
+        id: 1,
+        envelope: 1,
+        title: "חידה 1: בסיס מחשב הניווט הבינארי",
+        body: "מחשב הניווט של פרופ' סיגמא פועל על לוגיקה בינארית. מהו המספר הראשוני הזוגי היחיד הקיים בכל היקום המתמטי?",
+        mathClue: "רמז: הוא המספר הראשוני הקטן ביותר, ואינו אי-זוגי.",
+        answer: 2,
+        solvedExplanation: "2 הוא המספר הראשוני הזוגי היחיד, והוא אבן היסוד של הקוד הבינארי במחשב המעבדה!"
+      },
+      {
+        id: 2,
+        envelope: 1,
+        title: "חידה 2: קוד הכניסה התלת-ספרתי לתא הזמן",
+        body: "מהו המספר הראשוני התלת-ספרתי הקטן ביותר הקיים, שסכום ספרותיו שווה בדיוק ל-2?",
+        mathClue: "רמז: מספר תלת-ספרתי מתחיל ב-100 ומעלה. 100 פריק (10×10). מה לגבי העוקב לו?",
+        answer: 101,
+        solvedExplanation: "101 הוא ראשוני תלת-ספרתי מינימלי, וסכום ספרותיו 1 + 0 + 1 = 2!"
+      },
+      {
+        id: 3,
+        envelope: 1,
+        title: "חידה 3: פך השמן המסתורי של קאפה",
+        body: "קאפה מצאה פך שמן ועליו חרות ראשוני דו-ספרתי: סכום ספרותיו ראשוני קטן מ-10. אם נוסיף לו 8 נקבל ראשוני, ואם נחסר ממנו 4 נקבל שוב ראשוני! מהו המספר?",
+        mathClue: "רמז: בדקו מספרים ראשוניים בשנות ה-20: 2+3=5 (ראשוני), 23+8=31 (ראשוני), 23-4=19 (ראשוני).",
+        answer: 23,
+        solvedExplanation: "23 מקיים: 2+3=5 (ראשוני), 23+8=31 (ראשוני), 23-4=19 (ראשוני)!"
+      },
+      {
+        id: 4,
+        envelope: 1,
+        title: "חידה 4: שבעת מסלולי הזמן ומנורת המאורות",
+        body: "מספר ראשוני שהוא 'ראשוני תאום' של 5, שסכום כל מחלקיו הוא 8 (1 + המספר עצמו), ומסמל את ימות השבוע וענפי המנורה העתיקה.",
+        mathClue: "רמז: איזה ראשוני צמוד ל-5 במרחק 2?",
+        answer: 7,
+        solvedExplanation: "7 הוא ראשוני תאום של 5, גורמיו הם 1 ו-7 (סכומם 8), ומאיר את 7 מסלולי הזמן!"
+      },
+      {
+        id: 5,
+        envelope: 1,
+        title: "חידה 5: סף האנרגיה של קו החמישים",
+        body: "בכיול מנוע הזמן נדרש לחשב את המספר הראשוני הגדול ביותר הקטן מ-50. איזה מספר זה?",
+        mathClue: "רמז: בדקו את המספרים 49 (7×7), 48 (זוגי) ו-47.",
+        answer: 47,
+        solvedExplanation: "47 הוא המספר הראשוני הגדול ביותר מתחת ל-50 (48 זוגי, 49 מתחלק ב-7)."
+      },
+
+      // ENVELOPE 2: כיול שער הממדים (חידות 6-10)
+      {
+        id: 6,
+        envelope: 2,
+        title: "חידה 6: שער המראה הסימטרי (ראשוני מראה)",
+        body: "מספר ראשוני דו-ספרתי שאם הופכים את סדר ספרותיו מקבלים שוב מספר ראשוני (31), וסכום שתי ספרותיו הוא 4.",
+        mathClue: "רמז: ספרת העשרות היא 1 וספרת האחדות 3.",
+        answer: 13,
+        solvedExplanation: "13 הוא ראשוני, היפוכו 31 הוא ראשוני, וסכום ספרותיו 1 + 3 = 4!"
+      },
+      {
+        id: 7,
+        envelope: 2,
+        title: "חידה 7: חיבור שטחי הריבועים הקוסמיים",
+        body: "איזה מספר ראשוני מתקבל מחיבור השטחים של שני ריבועים שצלעותיהם הן 4 ו-5? (סכום הריבועים: 4 בריבוע ועוד 5 בריבוע).",
+        mathClue: "רמז: חברו 16 + 25 ובדקו האם התוצאה ראשונית.",
+        answer: 41,
+        solvedExplanation: "4² + 5² = 16 + 25 = 41, שהוא מספר ראשוני מובהק!"
+      },
+      {
+        id: 8,
+        envelope: 2,
+        title: "חידה 8: חותם החמישיות היחיד",
+        body: "בכל האינסוף של המספרים הטבעיים, קיים רק מספר ראשוני אחד ויחיד שספרת האחדות שלו היא 5. מהו?",
+        mathClue: "רמז: כל שאר המספרים שמסתיימים ב-5 מתחלקים ב-5 (פריקים).",
+        answer: 5,
+        solvedExplanation: "5 הוא הראשוני היחיד שמסתיים ב-5 (כל שאר כפולות 5 הן פריקות)!"
+      },
+      {
+        id: 9,
+        envelope: 2,
+        title: "חידה 9: ראשוני פלינדרומי כפול ספרות",
+        body: "מהו המספר הראשוני הדו-ספרתי הקטן ביותר ששתי ספרותיו זהות לחלוטין (מספר המזל של קאפה האלפקה)?",
+        mathClue: "רמז: בדקו 11, 22, 33...",
+        answer: 11,
+        solvedExplanation: "11 הוא הראשוני הדו-ספרתי היחיד ששתי ספרותיו זהות!"
+      },
+      {
+        id: 10,
+        envelope: 2,
+        title: "חידה 10: קוד מרסן החמישי",
+        body: "מספר ראשוני מטיפוס מרסן שמוגדר בנוסחה 2 בחזקת 5 פחות 1 (כלומר: 32 פחות 1). מהו המספר?",
+        mathClue: "רמז: 2 בחמישית שווה 32. החסירו 1.",
+        answer: 31,
+        solvedExplanation: "2⁵ - 1 = 32 - 1 = 31, שהוא ראשוני מרסן מפורסם!"
+      },
+
+      // ENVELOPE 3: אנרגיית מנוע הזהב (חידות 11-15)
+      {
+        id: 11,
+        envelope: 3,
+        title: "חידה 11: המספר הראשוני האי-זוגי הקטן בעולם",
+        body: "מהו המספר הראשוני האי-זוגי הקטן ביותר, שמייצג גם את שלושת ממדי המרחב שבהם אנו נעים?",
+        mathClue: "רמז: 1 אינו ראשוני, 2 זוגי. מהו המספר הבא?",
+        answer: 3,
+        solvedExplanation: "3 הוא המספר הראשוני האי-זוגי הראשון והקטן ביותר!"
+      },
+      {
+        id: 12,
+        envelope: 3,
+        title: "חידה 12: פער שש הספרות בגיל החוקרים",
+        body: "מספר ראשוני דו-ספרתי שבו ספרת האחדות גדולה בדיוק ב-6 מספרת העשרות (1 ו-7), ומציין את שנת השיא בחטיבה.",
+        mathClue: "רמז: חברו 10 ועוד 7.",
+        answer: 17,
+        solvedExplanation: "17 הוא ראשוני, שבו ספרת האחדות (7) גדולה ב-6 מספרת העשרות (1)!"
+      },
+      {
+        id: 13,
+        envelope: 3,
+        title: "חידה 13: התאום של קוד ה-41",
+        body: "מספר ראשוני שהוא 'ראשוני תאום' (Twin Prime) של המספר 41 (צמוד אליו במרחק של 2 כלפי מעלה).",
+        mathClue: "רמז: חברו 41 + 2.",
+        answer: 43,
+        solvedExplanation: "43 ו-41 הם צמד ראשוניים תאומים מושלם!"
+      },
+      {
+        id: 14,
+        envelope: 3,
+        title: "חידה 14: שיא האחדות בשנות העשרים",
+        body: "מהו המספר הראשוני שספרת העשרות שלו היא 2 וספרת האחדות שלו היא 9 (מספר שאינו מתחלק ב-3)?",
+        mathClue: "רמז: 27 מתחלק ב-3, אך 29 ראשוני.",
+        answer: 29,
+        solvedExplanation: "29 הוא ראשוני (סכום ספרותיו 11 ולכן אינו מתחלק ב-3)!"
+      },
+      {
+        id: 15,
+        envelope: 3,
+        title: "חידה 15: סכום השמונה בעשור החמישי",
+        body: "מספר ראשוני הנמצא בין 50 ל-60 שסכום ספרותיו שווה בדיוק ל-8 (5 ועוד 3).",
+        mathClue: "רמז: בדקו את 53 ואת 51 (שימו לב: 51 מתחלק ב-3 וב-17).",
+        answer: 53,
+        solvedExplanation: "53 הוא ראשוני, וסכום ספרותיו 5 + 3 = 8 (לעומת 51 שמתחלק ב-3)!"
+      },
+
+      // ENVELOPE 4: שיגור לגלקסיית התבונה (חידות 16-20)
+      {
+        id: 16,
+        envelope: 4,
+        title: "חידה 16: השורש של שער ה-361",
+        body: "איזה מספר ראשוני מתקבל מחישוב השורש הריבועי של 361? (או: המספר הראשוני שנמצא בדיוק בין 18 ל-20).",
+        mathClue: "רמז: איזה מספר בין 18 ל-20 מכפילים בעצמו ומקבלים 361?",
+        answer: 19,
+        solvedExplanation: "19 הוא ראשוני, ו-19 × 19 = 361!"
+      },
+      {
+        id: 17,
+        envelope: 4,
+        title: "חידה 17: מכפלת ספרות של 21",
+        body: "מספר ראשוני דו-ספרתי בשנות השלושים, שסכום ספרותיו הוא 10 ומכפלת ספרותיו היא 21 (3 כפול 7).",
+        mathClue: "רמז: ספרת עשרות 3 וספרת אחדות 7.",
+        answer: 37,
+        solvedExplanation: "37 הוא ראשוני מובהק: 3 + 7 = 10, ו-3 × 7 = 21!"
+      },
+      {
+        id: 18,
+        envelope: 4,
+        title: "חידה 18: גבול הבינגו של פרופ' סיגמא (עד 151)",
+        body: "מתוך מערך השיעור של המעבדה: מהו המספר הראשוני הגדול ביותר בלוח הבינגו (מגיע עד 151)?",
+        mathClue: "רמז: המספר מוזכר בהוראות המשחק כמספר הראשוני ה-36.",
+        answer: 151,
+        solvedExplanation: "151 הוא הראשוני ה-36 ומהווה את סף הגבול העליון בבינגו המעבדה!"
+      },
+      {
+        id: 19,
+        envelope: 4,
+        title: "חידה 19: ראשוני המזל בעשור השישים",
+        body: "מספר ראשוני הנמצא בין 60 ל-70 שסכום ספרותיו הוא 7 (6 ועוד 1).",
+        mathClue: "רמז: חברו 60 ועוד 1.",
+        answer: 61,
+        solvedExplanation: "61 הוא ראשוני, וסכום ספרותיו 6 + 1 = 7 (63 מתחלק ב-9, 69 מתחלק ב-3)!"
+      },
+      {
+        id: 20,
+        envelope: 4,
+        title: "חידה 20: המגן הדו-ספרתי האולטימטיבי",
+        body: "מהו המספר הראשוני הדו-ספרתי הגדול ביותר הקיים בעולם המתמטיקה (לפני המעבר ל-100)?",
+        mathClue: "רמז: 99 מתחלק ב-9, 98 זוגי. מה לגבי 97?",
+        answer: 97,
+        solvedExplanation: "97 הוא המספר הראשוני הדו-ספרתי הגדול ביותר ביקום!"
+      }
+    ];
+
+    // Hint matrix for Kappa's Dreidel for each of the 20 questions across N, G, H, P
+    const KAPPA_HINTS = {
+      1: {
+        N: "עבודה מהכיוון ההפוך: אם מספר ראשוני היה זוגי וגדול מ-2, הוא היה בהכרח מתחלק ב-2 ולכן לא ראשוני. מה נותר?",
+        G: "גישה נכונה: בדקו את המספרים הראשוניים הראשונים לפי הסדר. מי הראשון שממנו מתחילים?",
+        H: "הארה: 2 הוא המספר הזוגי היחיד ברשימת הראשוניים!",
+        P: "שלב 1: רשמו מספרים זוגיים חיוביים (2, 4, 6...). שלב 2: בדקו איזה מהם מתחלק רק ב-1 ובעצמו."
+      },
+      2: {
+        N: "מהסוף להתחלה: סכום הספרות הוא 2. מספר תלת-ספרתי חייב להתחיל ב-1 לפחות. אם הספרה הבאה 0, מה חייבת להיות הספרה השלישית?",
+        G: "גישה נכונה: 100 מתחלק ב-10 וב-2. המספר הבא אחריו הוא 101.",
+        H: "הארה: 101 אינו מתחלק ב-2, 3, 5, 7. הוא ראשוני!",
+        P: "שלב 1: רשמו אפשרויות למספרים תלת-ספרתיים שסכומם 2 (101, 110, 200). שלב 2: פסלו זוגיים (110, 200)."
+      },
+      3: {
+        N: "כיוון הפוך: בדקו את התנאים מהסוף: נחסר 4 ונקבל ראשוני, נוסיף 8 ונקבל ראשוני.",
+        G: "גישה נכונה: חפשו מספר ראשוני בשנות העשרים (בין 20 ל-30) שסכום ספרותיו קטן מ-10.",
+        H: "הארה: 23 פחות 4 שווה 19 (ראשוני), ו-23 ועוד 8 שווה 31 (ראשוני)!",
+        P: "שלב 1: הראשוניים בין 20 ל-30 הם 23 ו-29. שלב 2: בדקו 23+8 ו-29+8. מי מהם נותן ראשוני?"
+      },
+      4: {
+        N: "מהסוף להתחלה: ראשוניים תאומים הם במרחק 2 זה מזה. מי במרחק 2 מ-5?",
+        G: "גישה נכונה: תאומים של 5 יכולים להיות 3 (קטן ממנו) או 7 (גדול ממנו). סכום מחלקי 7 הוא 1+7=8.",
+        H: "הארה: התשובה היא 7 - ענפי המנורה וימי הבריאה!",
+        P: "שלב 1: בדקו את 5+2. שלב 2: ודאו שסכום המחלקים הוא 1 + 7 = 8."
+      },
+      5: {
+        N: "כיוון הפוך: ספרו לאחור מ-50: 49 (פריק: 7×7), 48 (זוגי). מה המספר הבא?",
+        G: "גישה נכונה: בדקו אם 47 מתחלק ב-2, 3, 5 או 7.",
+        H: "הארה: 47 אינו מתחלק באף מספר קטן ממנו מלבד 1 ו-47!",
+        P: "שלב 1: בדקו 49 = 7 כפול 7. שלב 2: בדקו 48 זוגי. שלב 3: מגיעים ל-47."
+      },
+      6: {
+        N: "כיוון הפוך: איזה מספר דו-ספרתי שהיפוכו הוא 31 נותן סכום ספרות 4?",
+        G: "גישה נכונה: רשמו מספרים שסכום ספרותיהם 4: 13, 22, 31. מי מהם ראשוני?",
+        H: "הארה: 13 והיפוכו 31 הם ראשוניי מראה מפורסמים!",
+        P: "שלב 1: הפכו את 31 וקבלו 13. שלב 2: ודאו ש-1+3=4 וש-13 ראשוני."
+      },
+      7: {
+        N: "כיוון הפוך: חשבו קודם את הריבועים: 4 בריבוע שווה 16, 5 בריבוע שווה 25.",
+        G: "גישה נכונה: חברו 16 ועוד 25.",
+        H: "הארה: 16 + 25 = 41. 41 הוא מספר ראשוני!",
+        P: "שלב 1: 4×4 = 16. שלב 2: 5×5 = 25. שלב 3: 16+25 = 41."
+      },
+      8: {
+        N: "כיוון הפוך: כל מספר שמסתיים ב-5 הוא כפולה של 5. אם הוא גדול מ-5, יש לו לפחות שלושה מחלקים (1, 5, והוא עצמו).",
+        G: "גישה נכונה: היחיד מבין כפולות 5 שמתחלק רק ב-1 ובעצמו הוא המספר 5 עצמו.",
+        H: "הארה: המספר הוא 5!",
+        P: "שלב 1: רשמו את כפולות 5 (5, 10, 15, 20...). שלב 2: פסלו את כל אלו שיש להם מחלקים נוספים."
+      },
+      9: {
+        N: "כיוון הפוך: המספרים הדו-ספרתיים שספרותיהם זהות הם 11, 22, 33, 44... כולם מתחלקים ב-11!",
+        G: "גישה נכונה: רק 11 מביניהם הוא ראשוני, כי עבורו 11 הוא עצמו.",
+        H: "הארה: המספר הוא 11!",
+        P: "שלב 1: רשמו 11, 22, 33. שלב 2: 22=2×11 (פריק). הראשוני היחיד הוא 11."
+      },
+      10: {
+        N: "כיוון הפוך: חשבו 2 בחזקת 5: 2×2×2×2×2 = 32. כעת החסירו 1.",
+        G: "גישה נכונה: חזקות של 2: 2, 4, 8, 16, 32. החסרת 1 נותנת 31.",
+        H: "הארה: 32 פחות 1 שווה 31 (ראשוני מרסן)!",
+        P: "שלב 1: חשבו 2⁵ = 32. שלב 2: חשבו 32 - 1 = 31."
+      },
+      11: {
+        N: "כיוון הפוך: המספרים הראשוניים מתחילים ב-2 (זוגי). מי מיד אחריו?",
+        G: "גישה נכונה: 3 אינו מתחלק באף מספר פרט ל-1 ול-3, והוא אי-זוגי.",
+        H: "הארה: המספר 3 הוא הראשוני האי-זוגי הראשון!",
+        P: "שלב 1: בדקו 1 (לא ראשוני בהגדרה). שלב 2: בדקו 2 (זוגי). שלב 3: 3 הוא התשובה."
+      },
+      12: {
+        N: "כיוון הפוך: ספרת האחדות גדולה ב-6 מספרת העשרות. אם העשרות היא 1, האחדות היא 1+6=7.",
+        G: "גישה נכונה: המספר המתקבל הוא 17. בדקו אם הוא ראשוני.",
+        H: "הארה: 17 הוא מספר ראשוני מושלם!",
+        P: "שלב 1: עשרות = 1. שלב 2: אחדות = 1 + 6 = 7. שלב 3: המספר הוא 17."
+      },
+      13: {
+        N: "כיוון הפוך: ראשוניים תאומים נבדלים ב-2. 41 ועוד 2 נותן 43.",
+        G: "גישה נכונה: האם 43 ראשוני? כן, אינו מתחלק ב-2, 3, 5, 7.",
+        H: "הארה: התשובה היא 43!",
+        P: "שלב 1: הוסיפו 2 ל-41. שלב 2: 41 + 2 = 43."
+      },
+      14: {
+        N: "כיוון הפוך: עשרות 2 ואחדות 9 נותן 29. האם הוא ראשוני?",
+        G: "גישה נכונה: סכום הספרות 2+9=11, שאינו מתחלק ב-3. הוא אינו זוגי ואינו מסתיים ב-5.",
+        H: "הארה: 29 הוא מספר ראשוני!",
+        P: "שלב 1: חברו ספרת עשרות 2 וספרת אחדות 9. שלב 2: ודאו שאינו פריק."
+      },
+      15: {
+        N: "כיוון הפוך: מספרים בין 50 ל-60 שסכום ספרותיהם 8: רק 53! (5+3=8).",
+        G: "גישה נכונה: שימו לב: 51=3×17 (פריק). 53 ראשוני.",
+        H: "הארה: 53 הוא ראשוני וסכום ספרותיו 8!",
+        P: "שלב 1: בדקו איזה מספר בעשור ה-50 סכום ספרותיו 8. שלב 2: 53 הוא היחיד."
+      },
+      16: {
+        N: "כיוון הפוך: מספר בין 18 ל-20 הוא 19. נבדוק: 19 כפול 19 שווה 361!",
+        G: "גישה נכונה: 19 הוא ראשוני (אינו מתחלק באף מספר קטן ממנו).",
+        H: "הארה: השורש של 361 הוא בדיוק 19!",
+        P: "שלב 1: המספר היחיד בין 18 ל-20 הוא 19. שלב 2: ודאו ש-19² = 361."
+      },
+      17: {
+        N: "כיוון הפוך: מכפלת ספרות 21 אפשרית רק עבור הספרות 3 ו-7 (כי 3×7=21).",
+        G: "גישה נכונה: המספר בשנות השלושים שנוצר הוא 37.",
+        H: "הארה: 37 הוא מספר ראשוני!",
+        P: "שלב 1: גורמי 21 הם 3 ו-7. שלב 2: המספר בעשור ה-30 הוא 37."
+      },
+      18: {
+        N: "כיוון הפוך: מהו המספר שמופיע בכותרת המערך כראשוני ה-36 והאחרון בבינגו?",
+        G: "גישה נכונה: בדקו את המספר 151 שצוין בלוח המורה.",
+        H: "הארה: המספר הוא 151!",
+        P: "שלב 1: שימו לב לטווח שהוגדר על ידי פרופ' סיגמא (עד 151). שלב 2: 151 הוא התשובה."
+      },
+      19: {
+        N: "כיוון הפוך: מספר בין 60 ל-70 שסכום ספרותיו 7: 61 (6+1=7).",
+        G: "גישה נכונה: 61 אינו מתחלק ב-2, 3, 5, 7. הוא ראשוני.",
+        H: "הארה: 61 הוא הראשוני המבוקש!",
+        P: "שלב 1: בדקו 6+1=7. שלב 2: ודאו ש-61 ראשוני."
+      },
+      20: {
+        N: "כיוון הפוך: נספור לאחור מ-100: 99 פריק (9×11), 98 זוגי. נבדוק את 97.",
+        G: "גישה נכונה: 97 אינו מתחלק באף ראשוני עד שורש 97 (2, 3, 5, 7).",
+        H: "הארה: 97 הוא המספר הראשוני הדו-ספרתי הגדול ביותר!",
+        P: "שלב 1: 99=3×33. שלב 2: 98 זוגי. שלב 3: 97 ראשוני."
+      }
+    };
+
+    // 6 Teams definition with unique 4x4 Bingo Boards
+    // Each team has an engineered winning line comprised of primes from the 20 questions!
+    // When completed, their unique secret key digit is unlocked!
+    const TEAMS_DATA = [
+      {
+        id: 1,
+        name: "צוות פאיצ'יק (הפנדה)",
+        character: "פאיצ'יק",
+        avatar: "🐼",
+        color: "var(--neon-cyan)",
+        secretDigit: 7,
+        winningLineType: "row", // Row 0: [2, 101, 23, 7] (Q1, Q2, Q3, Q4)
+        winningLineIndex: 0,
+        board: [
+          [2, 101, 23, 7],      // Row 0 - Win Line!
+          [13, 89, 5, 71],
+          [67, 3, 79, 43],
+          [19, 83, 151, 107]
+        ]
+      },
+      {
+        id: 2,
+        name: "צוות דלתא (האיילה)",
+        character: "דלתא",
+        avatar: "🦌",
+        color: "#ff77aa",
+        secretDigit: 4,
+        winningLineType: "col", // Col 1: [47, 13, 41, 5] (Q5, Q6, Q7, Q8)
+        winningLineIndex: 1,
+        board: [
+          [29, 47, 73, 11],
+          [89, 13, 37, 103],
+          [17, 41, 2, 79],
+          [61, 5, 109, 23]
+        ]
+      },
+      {
+        id: 3,
+        name: "צוות למדא (הקיפוד)",
+        character: "למדא",
+        avatar: "🦔",
+        color: "#a0e85b",
+        secretDigit: 2,
+        winningLineType: "diag-main", // Diag main: (0,0)=11, (1,1)=31, (2,2)=3, (3,3)=17 (Q9, Q10, Q11, Q12)
+        winningLineIndex: 0,
+        board: [
+          [11, 83, 67, 71],
+          [97, 31, 7, 101],
+          [47, 53, 3, 137],
+          [151, 29, 19, 17]
+        ]
+      },
+      {
+        id: 4,
+        name: "צוות קאפה (האלפקה)",
+        character: "קאפה",
+        avatar: "🦙",
+        color: "var(--neon-gold)",
+        secretDigit: 9,
+        winningLineType: "row", // Row 2: [43, 29, 53, 19] (Q13, Q14, Q15, Q16)
+        winningLineIndex: 2,
+        board: [
+          [103, 5, 73, 2],
+          [37, 139, 11, 61],
+          [43, 29, 53, 19],    // Row 2 - Win Line!
+          [7, 89, 101, 13]
+        ]
+      },
+      {
+        id: 5,
+        name: "צוות פרופסור סיגמא",
+        character: "פרופ' סיגמא",
+        avatar: "👨‍🔬",
+        color: "var(--neon-purple)",
+        secretDigit: 5,
+        winningLineType: "col", // Col 3: [37, 151, 61, 97] (Q17, Q18, Q19, Q20)
+        winningLineIndex: 3,
+        board: [
+          [23, 71, 79, 37],
+          [3, 41, 83, 151],
+          [17, 107, 31, 61],
+          [109, 53, 5, 97]
+        ]
+      },
+      {
+        id: 6,
+        name: "צוות חוקרי העתיד",
+        character: "חוקרי העתיד",
+        avatar: "🚀",
+        color: "#00d4ff",
+        secretDigit: 8,
+        winningLineType: "diag-anti", // Anti-diag: (0,3)=2, (1,2)=13, (2,1)=43, (3,0)=97 (Q1, Q6, Q13, Q20)
+        winningLineIndex: 0,
+        board: [
+          [79, 67, 71, 2],
+          [89, 73, 13, 101],
+          [31, 43, 83, 107],
+          [97, 11, 17, 149]
+        ]
+      }
+    ];
+
+    /* ==========================================================
+       2. APPLICATION STATE MANAGEMENT
+       ========================================================== */
+
+    let currentTeamId = 1;
+    let currentEnvelopeId = 1;
+    let soundEnabled = true;
+
+    // State object for persistence
+    let gameState = {
+      solvedQuestions: {}, // questionId: true
+      timerSecondsRemaining: 45 * 60,
+      timerRunning: false,
+      masterDials: ["", "", "", "", "", ""],
+      vaultUnlocked: false
+    };
+
+    let timerInterval = null;
+
+    /* ==========================================================
+       3. WEB AUDIO SYNTHESIZER
+       ========================================================= */
+
+    let audioCtx = null;
+
+    function getAudioContext() {
+      if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextClass) {
+          audioCtx = new AudioContextClass();
+        }
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function playSoundTone(freq, duration = 0.15, type = 'sine') {
+      if (!soundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        gain.gain.setValueAtTime(0.12, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + duration);
+      } catch (e) {
+        // Audio error suppression
+      }
+    }
+
+    function playSuccessChord() {
+      if (!soundEnabled) return;
+      const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+      notes.forEach((freq, idx) => {
+        setTimeout(() => playSoundTone(freq, 0.22, 'triangle'), idx * 80);
+      });
+    }
+
+    function playBingoFanfare() {
+      if (!soundEnabled) return;
+      const notes = [440, 554.37, 659.25, 880, 1108.73, 1318.51];
+      notes.forEach((freq, idx) => {
+        setTimeout(() => playSoundTone(freq, 0.35, 'triangle'), idx * 100);
+      });
+    }
+
+    function playErrorBeep() {
+      if (!soundEnabled) return;
+      playSoundTone(220, 0.2, 'sawtooth');
+      setTimeout(() => playSoundTone(180, 0.25, 'sawtooth'), 120);
+    }
+
+    function playDreidelClick() {
+      if (!soundEnabled) return;
+      playSoundTone(800 + Math.random() * 400, 0.04, 'square');
+    }
+
+    function playVaultUnlockJingle() {
+      if (!soundEnabled) return;
+      const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99, 1046.50, 1318.51];
+      notes.forEach((freq, idx) => {
+        setTimeout(() => playSoundTone(freq, 0.45, 'triangle'), idx * 90);
+      });
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      const btn = document.getElementById('btn-sound-toggle');
+      if (soundEnabled) {
+        btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>`;
+        btn.title = "צלילים פעילים";
+        showToast("צלילים הופעלו 🔊");
+      } else {
+        btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>`;
+        btn.title = "צלילים מושתקים";
+        showToast("צלילים הושתקו 🔇");
+      }
+    }
+
+    /* ==========================================================
+       4. INITIALIZATION & RENDERING
+       ========================================================== */
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadSavedState();
+      renderTeamSelectorRibbon();
+      renderBingoBoard();
+      renderRiddleCards();
+      renderMasterDashboard();
+      populateDreidelDropdown();
+      updatePowerGauge();
+      updateTimerDisplay();
+    });
+
+    // Main view navigation
+    function switchMainView(viewName) {
+      document.querySelectorAll('.view-container').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-tab-btn').forEach(el => el.classList.remove('active'));
+
+      const activeView = document.getElementById(`view-${viewName}`);
+      const activeTabBtn = document.getElementById(`tab-btn-${viewName}`);
+      
+      if (activeView) activeView.classList.add('active');
+      if (activeTabBtn) activeTabBtn.classList.add('active');
+
+      if (viewName === 'master') {
+        renderMasterDashboard();
+      }
+    }
+
+    // Render 6 Team Pills
+    function renderTeamSelectorRibbon() {
+      const container = document.querySelector('.team-selector-ribbon');
+      if (!container) return;
+      container.innerHTML = "";
+
+      TEAMS_DATA.forEach(team => {
+        const isSelected = team.id === currentTeamId;
+        const bingoState = evaluateTeamBingo(team.id);
+
+        const btn = document.createElement('button');
+        btn.className = `team-pill-btn ${isSelected ? 'active' : ''}`;
+        btn.onclick = () => selectTeam(team.id);
+        btn.setAttribute('role', 'tab');
+        btn.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+
+        btn.innerHTML = `
+          <span class="team-avatar">${team.avatar}</span>
+          <div class="team-info">
+            <div class="team-name">${team.name}</div>
+            <div class="team-meta">
+              <span>${bingoState.hasBingo ? '🏆 בינגו הושלם' : `${bingoState.litCount} משבצות`}</span>
+              <span class="team-status-indicator ${bingoState.hasBingo ? 'ready' : ''}"></span>
+            </div>
+          </div>
+        `;
+
+        container.appendChild(btn);
+      });
+    }
+
+    function selectTeam(teamId) {
+      currentTeamId = teamId;
+      renderTeamSelectorRibbon();
+      renderBingoBoard();
+      updateBingoKeyCapsule();
+      playSoundTone(440, 0.08);
+    }
+
+    // Render 4x4 Bingo Board for current team
+    function renderBingoBoard() {
+      const team = TEAMS_DATA.find(t => t.id === currentTeamId);
+      if (!team) return;
+
+      const titleEl = document.getElementById('current-team-board-name');
+      const iconEl = document.getElementById('current-team-icon');
+      if (titleEl) titleEl.textContent = team.name;
+      if (iconEl) iconEl.textContent = team.avatar;
+
+      const gridEl = document.getElementById('bingo-grid-element');
+      if (!gridEl) return;
+      gridEl.innerHTML = "";
+
+      const bingoState = evaluateTeamBingo(team.id);
+
+      // Create 16 cells (4x4)
+      for (let r = 0; r < 4; r++) {
+        for (let c = 0; c < 4; c++) {
+          const primeVal = team.board[r][c];
+          const isLit = isPrimeSolved(primeVal);
+          const isWinningCell = bingoState.winningCells.some(cell => cell.r === r && cell.c === c);
+
+          const cellEl = document.createElement('div');
+          cellEl.className = `bingo-cell ${isLit ? 'lit' : ''} ${isWinningCell ? 'bingo-winner' : ''}`;
+          cellEl.setAttribute('role', 'gridcell');
+
+          cellEl.innerHTML = `
+            <span class="bingo-cell-prime">${primeVal}</span>
+            <span class="bingo-cell-coord">${r+1},${c+1}</span>
+          `;
+
+          gridEl.appendChild(cellEl);
+        }
+      }
+
+      // Update badge
+      const badgeEl = document.getElementById('board-line-status-badge');
+      if (badgeEl) {
+        if (bingoState.hasBingo) {
+          badgeEl.textContent = `🎉 בינגו הושלם! ספרה: ${team.secretDigit}`;
+          badgeEl.style.borderColor = "var(--neon-gold)";
+          badgeEl.style.color = "var(--neon-gold)";
+        } else {
+          badgeEl.textContent = `קו 0 / 1 הושלם (${bingoState.litCount} משבצות)`;
+          badgeEl.style.borderColor = "var(--neon-cyan)";
+          badgeEl.style.color = "var(--neon-cyan)";
+        }
+      }
+
+      updateBingoKeyCapsule();
+    }
+
+    function isPrimeSolved(primeNumber) {
+      // Find which question has this prime as answer
+      const q = QUESTIONS_DATA.find(q => q.answer === primeNumber);
+      if (!q) return false;
+      return !!gameState.solvedQuestions[q.id];
+    }
+
+    // Evaluate Bingo status for a team
+    function evaluateTeamBingo(teamId) {
+      const team = TEAMS_DATA.find(t => t.id === teamId);
+      if (!team) return { hasBingo: false, litCount: 0, winningCells: [] };
+
+      let litCount = 0;
+      let winningCells = [];
+
+      // Check rows
+      for (let r = 0; r < 4; r++) {
+        let rowLit = true;
+        let rowCells = [];
+        for (let c = 0; c < 4; c++) {
+          const val = team.board[r][c];
+          if (isPrimeSolved(val)) {
+            litCount++;
+          } else {
+            rowLit = false;
+          }
+          rowCells.push({ r, c });
+        }
+        if (rowLit) {
+          winningCells = winningCells.concat(rowCells);
+        }
+      }
+
+      // We recount unique lit cells
+      let uniqueLit = 0;
+      for (let r = 0; r < 4; r++) {
+        for (let c = 0; c < 4; c++) {
+          if (isPrimeSolved(team.board[r][c])) uniqueLit++;
+        }
+      }
+
+      // Check columns
+      for (let c = 0; c < 4; c++) {
+        let colLit = true;
+        let colCells = [];
+        for (let r = 0; r < 4; r++) {
+          if (!isPrimeSolved(team.board[r][c])) {
+            colLit = false;
+          }
+          colCells.push({ r, c });
+        }
+        if (colLit) {
+          winningCells = winningCells.concat(colCells);
+        }
+      }
+
+      // Main diagonal
+      let diag1Lit = true;
+      let diag1Cells = [];
+      for (let i = 0; i < 4; i++) {
+        if (!isPrimeSolved(team.board[i][i])) diag1Lit = false;
+        diag1Cells.push({ r: i, c: i });
+      }
+      if (diag1Lit) winningCells = winningCells.concat(diag1Cells);
+
+      // Anti diagonal
+      let diag2Lit = true;
+      let diag2Cells = [];
+      for (let i = 0; i < 4; i++) {
+        if (!isPrimeSolved(team.board[i][3 - i])) diag2Lit = false;
+        diag2Cells.push({ r: i, c: 3 - i });
+      }
+      if (diag2Lit) winningCells = winningCells.concat(diag2Cells);
+
+      const hasBingo = winningCells.length > 0;
+      return { hasBingo, litCount: uniqueLit, winningCells };
+    }
+
+    function updateBingoKeyCapsule() {
+      const team = TEAMS_DATA.find(t => t.id === currentTeamId);
+      if (!team) return;
+
+      const bingoState = evaluateTeamBingo(team.id);
+      const cardEl = document.getElementById('bingo-key-card');
+      const capsuleEl = document.getElementById('secret-key-capsule');
+      const statusText = document.getElementById('key-capsule-status-text');
+      const hintText = document.getElementById('key-capsule-hint');
+
+      if (!cardEl || !capsuleEl) return;
+
+      if (bingoState.hasBingo) {
+        cardEl.classList.add('unlocked');
+        capsuleEl.textContent = team.secretDigit;
+        statusText.innerHTML = `⭐ קו בינגו הושלם בהצלחה!`;
+        hintText.innerHTML = `ספרת המפתח של <strong>${team.name}</strong> למנעול הכספת המרכזית היא <strong>${team.secretDigit}</strong>!`;
+      } else {
+        cardEl.classList.remove('unlocked');
+        capsuleEl.textContent = "?";
+        statusText.textContent = "🔒 נעול - השלימו קו בינגו (שורה, טור או אלכסון)";
+        hintText.textContent = "פתרו חידות במעטפות. עם השלמת קו בינגו ראשון תחשף ספרת הכספת של קבוצתכם!";
+      }
+    }
+
+    // Switch Envelope (1-4)
+    function switchEnvelope(envId) {
+      currentEnvelopeId = envId;
+
+      document.querySelectorAll('.envelope-btn').forEach((btn, idx) => {
+        if (idx + 1 === envId) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+
+      const bannerTitles = {
+        1: "מעטפה 1: אתחול מערכות הזמן (חידות 1–5)",
+        2: "מעטפה 2: כיול שער הממדים (חידות 6–10)",
+        3: "מעטפה 3: אנרגיית מנוע הזהב (חידות 11–15)",
+        4: "מעטפה 4: שיגור לגלקסיית התבונה (חידות 16–20)"
+      };
+
+      const bannerDescs = {
+        1: "אתחול מחשב הניווט והפעלת קווי המספרים הראשוניים הבסיסיים.",
+        2: "כיול מעברי המראה, ריבועי הממדים וקוד מרסן החמישי.",
+        3: "טעינת תאי אנרגיה גבוהה בעזרת צמדי ראשוניים תאומים ומספרי מפתח.",
+        4: "פריצת מסך ההגנה האחרון וכיול כיוון השיגור לחופשת הקיץ."
+      };
+
+      const bannerTitleEl = document.getElementById('env-banner-title');
+      const bannerDescEl = document.getElementById('env-banner-desc');
+      if (bannerTitleEl) bannerTitleEl.textContent = bannerTitles[envId];
+      if (bannerDescEl) bannerDescEl.textContent = bannerDescs[envId];
+
+      renderRiddleCards();
+      playSoundTone(520, 0.06);
+    }
+
+    // Render Riddle Cards for Current Envelope
+    function renderRiddleCards() {
+      const container = document.getElementById('riddles-stack-container');
+      if (!container) return;
+      container.innerHTML = "";
+
+      const questions = QUESTIONS_DATA.filter(q => q.envelope === currentEnvelopeId);
+
+      questions.forEach(q => {
+        const isSolved = !!gameState.solvedQuestions[q.id];
+
+        const card = document.createElement('div');
+        card.className = `riddle-card ${isSolved ? 'solved' : ''}`;
+        card.id = `riddle-card-${q.id}`;
+
+        card.innerHTML = `
+          <div class="riddle-header">
+            <span class="riddle-tag">חידה #${q.id}</span>
+            <span class="riddle-solved-badge">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              פוצחה בהצלחה! (תשובה: ${q.answer})
+            </span>
+          </div>
+          <div class="riddle-body">${q.body}</div>
+          <div class="riddle-math-highlight">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            <span>${q.mathClue}</span>
+          </div>
+
+          <div class="riddle-input-row">
+            <div class="input-field-group">
+              <label for="input-riddle-${q.id}" class="input-label">הזינו את המספר הראשוני:</label>
+              <input type="number" id="input-riddle-${q.id}" class="prime-input" placeholder="?" value="${isSolved ? q.answer : ''}" ${isSolved ? 'disabled' : ''} onkeydown="handleInputKey(event, ${q.id})">
+            </div>
+
+            <button class="btn-verify" id="btn-verify-${q.id}" onclick="verifyAnswer(${q.id})" ${isSolved ? 'disabled' : ''}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>${isSolved ? 'פוצח' : 'בדוק תשובה'}</span>
+            </button>
+
+            <button class="btn-hint-trigger" onclick="openDreidelForQuestion(${q.id})">
+              <span>רמז מקאפה 🪅</span>
+            </button>
+          </div>
+
+          <div id="feedback-${q.id}" class="feedback-msg ${isSolved ? 'show-success' : ''}">
+            ${isSolved ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> <span>${q.solvedExplanation}</span>` : ''}
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+
+      updateEnvelopeBadges();
+      updateCounterDisplay();
+    }
+
+    function handleInputKey(e, questionId) {
+      if (e.key === 'Enter') {
+        verifyAnswer(questionId);
+      }
+    }
+
+    // Verify student answer
+    function verifyAnswer(questionId) {
+      const q = QUESTIONS_DATA.find(item => item.id === questionId);
+      if (!q) return;
+
+      const inputEl = document.getElementById(`input-riddle-${questionId}`);
+      const feedbackEl = document.getElementById(`feedback-${questionId}`);
+      if (!inputEl) return;
+
+      const enteredVal = parseInt(inputEl.value.trim(), 10);
+
+      if (isNaN(enteredVal)) {
+        if (feedbackEl) {
+          feedbackEl.className = "feedback-msg show-error";
+          feedbackEl.innerHTML = `⚠️ אנא הזינו מספר ראשוני תקין.`;
+        }
+        playErrorBeep();
+        return;
+      }
+
+      if (enteredVal === q.answer) {
+        // Correct answer!
+        gameState.solvedQuestions[questionId] = true;
+        saveState();
+
+        playSuccessChord();
+        showToast(`✨ תשובה נכונה לחידה #${questionId}! המספר הראשוני ${q.answer} נדלק בלוחות!`);
+
+        renderRiddleCards();
+        renderBingoBoard();
+        renderTeamSelectorRibbon();
+        updatePowerGauge();
+        renderMasterDashboard();
+
+        // Check if this answer just caused a Bingo
+        const team = TEAMS_DATA.find(t => t.id === currentTeamId);
+        const bingoState = evaluateTeamBingo(currentTeamId);
+        if (bingoState.hasBingo) {
+          playBingoFanfare();
+          triggerConfettiBurst(25);
+          showToast(`🎉 BINGO! קו הושלם עבור ${team.name}! ספרת המפתח נחשפה: ${team.secretDigit}!`);
+        }
+      } else {
+        // Incorrect answer
+        playErrorBeep();
+        if (feedbackEl) {
+          feedbackEl.className = "feedback-msg show-error";
+          feedbackEl.innerHTML = `❌ המספר ${enteredVal} אינו התשובה הנכונה. בדקו שוב או סובבו את סביבון קאפה לרמז!`;
+        }
+      }
+    }
+
+    // Update Envelopes Progress & Counter
+    function updateEnvelopeBadges() {
+      for (let envId = 1; envId <= 4; envId++) {
+        const questionsInEnv = QUESTIONS_DATA.filter(q => q.envelope === envId);
+        const solvedInEnv = questionsInEnv.filter(q => !!gameState.solvedQuestions[q.id]).length;
+        const badgeEl = document.getElementById(`env-badge-1`.replace('1', envId));
+        const tabBtn = document.getElementById(`env-tab-1`.replace('1', envId));
+
+        if (badgeEl) badgeEl.textContent = `${solvedInEnv}/5`;
+        if (tabBtn) {
+          if (solvedInEnv === 5) {
+            tabBtn.classList.add('completed');
+          } else {
+            tabBtn.classList.remove('completed');
+          }
+        }
+      }
+    }
+
+    function updateCounterDisplay() {
+      const totalSolved = Object.keys(gameState.solvedQuestions).length;
+      const counterEl = document.getElementById('team-solved-counter');
+      if (counterEl) {
+        counterEl.textContent = `${totalSolved} / 20 פוצחו`;
+      }
+    }
+
+    // Update Golden Engine Power Meter (20 questions = 100%, 5% per question)
+    function updatePowerGauge() {
+      const totalSolved = Object.keys(gameState.solvedQuestions).length;
+      const pct = Math.min(100, Math.round((totalSolved / 20) * 100));
+
+      const pctEl = document.getElementById('power-percentage');
+      const barEl = document.getElementById('power-bar-fill');
+
+      if (pctEl) pctEl.textContent = `${pct}%`;
+      if (barEl) barEl.style.width = `${pct}%`;
+    }
+
+    /* ==========================================================
+       5. MASTER DASHBOARD & COMBINED 6-DIGIT VAULT
+       ========================================================== */
+
+    function renderMasterDashboard() {
+      // 1. Render 6 Lock Dials
+      const dialsGrid = document.getElementById('master-lock-dials-grid');
+      if (dialsGrid) {
+        dialsGrid.innerHTML = "";
+        TEAMS_DATA.forEach((team, idx) => {
+          const bingoState = evaluateTeamBingo(team.id);
+          const currentVal = gameState.masterDials[idx] || "";
+
+          const card = document.createElement('div');
+          card.className = `lock-dial-card ${currentVal !== '' ? 'has-digit' : ''}`;
+
+          card.innerHTML = `
+            <div class="dial-team-avatar">${team.avatar}</div>
+            <div class="dial-team-label">קבוצה ${team.id}</div>
+            <input type="text" maxlength="1" id="master-dial-${idx}" class="dial-input-box" value="${currentVal}" oninput="handleDialInput(${idx}, this.value)" placeholder="?" aria-label="ספרה לקבוצה ${team.id}">
+            <div style="font-size: 0.65rem; color: ${bingoState.hasBingo ? 'var(--neon-green)' : 'var(--on-surface-muted)'}">
+              ${bingoState.hasBingo ? `נחשף: ${team.secretDigit}` : 'טרם נחשף'}
+            </div>
+          `;
+
+          dialsGrid.appendChild(card);
+        });
+      }
+
+      // 2. Render 6 Teams Monitoring Grid
+      const monitorGrid = document.getElementById('master-monitoring-grid');
+      if (monitorGrid) {
+        monitorGrid.innerHTML = "";
+        let totalBingoTeams = 0;
+
+        TEAMS_DATA.forEach(team => {
+          const bingoState = evaluateTeamBingo(team.id);
+          if (bingoState.hasBingo) totalBingoTeams++;
+
+          const card = document.createElement('div');
+          card.className = `monitor-card ${bingoState.hasBingo ? 'has-bingo' : ''}`;
+
+          card.innerHTML = `
+            <div class="monitor-header">
+              <div class="monitor-identity">
+                <span class="monitor-avatar">${team.avatar}</span>
+                <div>
+                  <div class="monitor-title">${team.name}</div>
+                  <div class="monitor-subtitle">ספרה מיועדת: #${team.id} ברצף</div>
+                </div>
+              </div>
+              <span class="monitor-badge ${bingoState.hasBingo ? 'bingo-ready' : 'waiting'}">
+                ${bingoState.hasBingo ? 'קו בינגו הושלם! 🏆' : 'במאמץ פעיל...'}
+              </span>
+            </div>
+
+            <div class="monitor-progress-row">
+              <span>משבצות פעילות: ${bingoState.litCount} / 16</span>
+              <span>${Math.round((bingoState.litCount / 16) * 100)}%</span>
+            </div>
+            <div class="monitor-mini-bar">
+              <div class="monitor-mini-bar-fill" style="width: ${(bingoState.litCount / 16) * 100}%"></div>
+            </div>
+
+            <div class="monitor-secret-row">
+              <span>ספרת הכספת של הקבוצה:</span>
+              <span class="monitor-secret-num">${bingoState.hasBingo ? team.secretDigit : '🔒 נעול'}</span>
+            </div>
+
+            <button class="btn-quick-inspect" onclick="inspectTeam(${team.id})">
+              <span>עבור ללוח של ${team.character}</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+          `;
+
+          monitorGrid.appendChild(card);
+        });
+
+        const badge = document.getElementById('master-bingo-count-badge');
+        if (badge) badge.textContent = `${totalBingoTeams} / 6 פוצחו`;
+      }
+    }
+
+    function handleDialInput(idx, val) {
+      gameState.masterDials[idx] = val.trim();
+      saveState();
+
+      // Auto focus next input
+      if (val.trim().length === 1 && idx < 5) {
+        const nextInput = document.getElementById(`master-dial-${idx + 1}`);
+        if (nextInput) nextInput.focus();
+      }
+    }
+
+    function autoSyncRevealedDigits() {
+      let syncedCount = 0;
+      TEAMS_DATA.forEach((team, idx) => {
+        const bingoState = evaluateTeamBingo(team.id);
+        if (bingoState.hasBingo) {
+          gameState.masterDials[idx] = String(team.secretDigit);
+          syncedCount++;
+        }
+      });
+      saveState();
+      renderMasterDashboard();
+      playSoundTone(600, 0.15);
+      showToast(`סונכרנו ${syncedCount} ספרות שנחשפו בלוחות הבינגו!`);
+    }
+
+    function inspectTeam(teamId) {
+      currentTeamId = teamId;
+      switchMainView('team');
+      selectTeam(teamId);
+    }
+
+    // Master Unlock Attempt
+    function attemptMasterUnlock() {
+      const enteredCode = gameState.masterDials.join('');
+      const expectedCode = TEAMS_DATA.map(t => t.secretDigit).join(''); // "742958"
+
+      if (enteredCode.length < 6) {
+        playErrorBeep();
+        showToast("⚠️ יש להזין את כל 6 ספרות הקוד במנעול המרכזי!");
+        return;
+      }
+
+      if (enteredCode === expectedCode) {
+        // Vault unlocked!
+        gameState.vaultUnlocked = true;
+        saveState();
+        playVaultUnlockJingle();
+        triggerConfettiBurst(120);
+
+        const modal = document.getElementById('victory-modal');
+        if (modal) modal.classList.add('active');
+      } else {
+        playErrorBeep();
+        showToast("❌ הקוד שגוי! ודאו שכל קבוצה פיצחה את קו הבינגו שלה והעבירה את ספרתה המדויקת.");
+      }
+    }
+
+    function closeVictoryModal() {
+      const modal = document.getElementById('victory-modal');
+      if (modal) modal.classList.remove('active');
+    }
+
+    /* ==========================================================
+       6. KAPPA'S DREIDEL (סביבון הרמזים נ-ג-ה-פ)
+       ========================================================== */
+
+    const DREIDEL_FACES = ['נ', 'ג', 'ה', 'פ'];
+    let currentDreidelLetter = 'נ';
+    let isSpinning = false;
+
+    function populateDreidelDropdown() {
+      const select = document.getElementById('hint-riddle-select');
+      if (!select) return;
+      select.innerHTML = "";
+
+      QUESTIONS_DATA.forEach(q => {
+        const opt = document.createElement('option');
+        opt.value = q.id;
+        opt.textContent = `מעטפה ${q.envelope} | ${q.title}`;
+        select.appendChild(opt);
+      });
+    }
+
+    function openDreidelForQuestion(questionId) {
+      switchMainView('dreidel');
+      const select = document.getElementById('hint-riddle-select');
+      if (select) {
+        select.value = questionId;
+      }
+      spinKappaDreidel();
+    }
+
+    function spinKappaDreidel() {
+      if (isSpinning) return;
+      isSpinning = true;
+
+      const dreidelBox = document.getElementById('dreidel-3d-box');
+      const frontFace = document.getElementById('dreidel-front-face');
+      const resultText = document.getElementById('dreidel-result-text');
+      const btn = document.getElementById('btn-spin-dreidel');
+
+      if (btn) btn.disabled = true;
+      if (resultText) resultText.textContent = "הסביבון מסתחרר בזמן...";
+
+      // Choose random target letter
+      const randomIndex = Math.floor(Math.random() * DREIDEL_FACES.length);
+      const targetLetter = DREIDEL_FACES[randomIndex];
+
+      // Audio click ticks while spinning
+      let tickCount = 0;
+      const spinInterval = setInterval(() => {
+        playDreidelClick();
+        tickCount++;
+        if (tickCount > 18) clearInterval(spinInterval);
+      }, 140);
+
+      // 3D spin rotation animation
+      const extraRotations = 360 * 4 + (randomIndex * 90);
+      if (dreidelBox) {
+        dreidelBox.style.transform = `rotateY(${extraRotations}deg) rotateX(15deg)`;
+      }
+
+      setTimeout(() => {
+        isSpinning = false;
+        currentDreidelLetter = targetLetter;
+
+        if (frontFace) frontFace.textContent = targetLetter;
+        if (dreidelBox) {
+          dreidelBox.style.transform = `rotateY(0deg) rotateX(0deg)`;
+        }
+
+        if (btn) btn.disabled = false;
+
+        highlightPrincipleCard(targetLetter);
+        updateKappaHintSpeech();
+        playSoundTone(880, 0.25, 'triangle');
+
+        const letterNames = {
+          'נ': "נ' (נסו כיוון הפוך)",
+          'ג': "ג' (גישה נכונה)",
+          'ה': "ה' (הארה)",
+          'פ': "פ' (פירוק לשלבים)"
+        };
+
+        if (resultText) {
+          resultText.innerHTML = `הסביבון נעצר על האות: <strong style="color: var(--neon-gold); font-size: 1.1rem;">${letterNames[targetLetter]}</strong>`;
+        }
+      }, 2600);
+    }
+
+    function highlightPrincipleCard(letter) {
+      document.querySelectorAll('.principle-item').forEach(el => el.classList.remove('active-letter'));
+      const cardMap = { 'נ': 'N', 'ג': 'G', 'ה': 'H', 'פ': 'P' };
+      const cardId = `principle-card-${cardMap[letter]}`;
+      const el = document.getElementById(cardId);
+      if (el) el.classList.add('active-letter');
+    }
+
+    function updateKappaHintSpeech() {
+      const select = document.getElementById('hint-riddle-select');
+      const questionId = select ? parseInt(select.value, 10) : 1;
+
+      const titleEl = document.getElementById('kappa-hint-title');
+      const bodyEl = document.getElementById('kappa-hint-body');
+
+      const letterMap = { 'נ': 'N', 'ג': 'G', 'ה': 'H', 'פ': 'P' };
+      const key = letterMap[currentDreidelLetter] || 'N';
+
+      const hintText = (KAPPA_HINTS[questionId] && KAPPA_HINTS[questionId][key]) 
+        ? KAPPA_HINTS[questionId][key] 
+        : "השתמשו בחוקיות המספרים הראשוניים ובדקו סימני התחלקות ב-2, 3 ו-5.";
+
+      if (titleEl) {
+        titleEl.textContent = `רמז ${currentDreidelLetter}' עבור חידה #${questionId}`;
+      }
+
+      if (bodyEl) {
+        bodyEl.innerHTML = `
+          <div style="margin-bottom: 6px; font-weight: 700; color: var(--neon-gold);">
+            עצת קאפה (${currentDreidelLetter}):
+          </div>
+          <div>${hintText}</div>
+        `;
+      }
+    }
+
+    /* ==========================================================
+       7. 45-MINUTE ESCAPE COUNTDOWN TIMER
+       ========================================================== */
+
+    function toggleTimer() {
+      gameState.timerRunning = !gameState.timerRunning;
+      saveState();
+
+      const btn = document.getElementById('btn-timer-toggle');
+      if (gameState.timerRunning) {
+        startTimerLoop();
+        if (btn) btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="4" height="16" x="6" y="4"></rect><rect width="4" height="16" x="14" y="4"></rect></svg>`;
+        showToast("הטיימר הופעל! ⏱️");
+        playSoundTone(580, 0.1);
+      } else {
+        stopTimerLoop();
+        if (btn) btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
+        showToast("הטיימר הושהה ⏸️");
+      }
+    }
+
+    function startTimerLoop() {
+      if (timerInterval) clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        if (gameState.timerSecondsRemaining > 0) {
+          gameState.timerSecondsRemaining--;
+          updateTimerDisplay();
+
+          // Low time warning (< 5 minutes)
+          if (gameState.timerSecondsRemaining === 300) {
+            playSoundTone(300, 0.5, 'sawtooth');
+            showToast("⚠️ נותרו 5 דקות בלבד לסגירת שער הזמן!");
+          }
+        } else {
+          stopTimerLoop();
+          gameState.timerRunning = false;
+          playErrorBeep();
+          showToast("⏰ הזמן תם! האם הספקתם לחשוף את הקוד?");
+        }
+      }, 1000);
+    }
+
+    function stopTimerLoop() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+    }
+
+    function resetTimer() {
+      stopTimerLoop();
+      gameState.timerRunning = false;
+      gameState.timerSecondsRemaining = 45 * 60;
+      saveState();
+      updateTimerDisplay();
+
+      const btn = document.getElementById('btn-timer-toggle');
+      if (btn) btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
+      showToast("הטיימר אופס ל-45:00.");
+    }
+
+    function updateTimerDisplay() {
+      const displayEl = document.getElementById('timer-display');
+      if (!displayEl) return;
+
+      const mins = Math.floor(gameState.timerSecondsRemaining / 60);
+      const secs = gameState.timerSecondsRemaining % 60;
+
+      const formatted = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      displayEl.textContent = formatted;
+
+      if (gameState.timerSecondsRemaining < 300) {
+        displayEl.classList.add('timer-danger');
+      } else {
+        displayEl.classList.remove('timer-danger');
+      }
+    }
+
+    /* ==========================================================
+       8. TEACHER TOOLBOX & DEMO HELPERS
+       ========================================================== */
+
+    function demoUnlockAllBingo() {
+      // Instantly solves questions to populate winning lines for teacher demo
+      QUESTIONS_DATA.forEach(q => {
+        gameState.solvedQuestions[q.id] = true;
+      });
+      TEAMS_DATA.forEach((team, idx) => {
+        gameState.masterDials[idx] = String(team.secretDigit);
+      });
+      saveState();
+
+      renderRiddleCards();
+      renderBingoBoard();
+      renderTeamSelectorRibbon();
+      updatePowerGauge();
+      renderMasterDashboard();
+      playSuccessChord();
+      triggerConfettiBurst(40);
+      showToast("מצב הדגמה: כל 20 החידות וקווי הבינגו פוצחו בהצלחה!");
+    }
+
+    function confirmResetAll() {
+      if (confirm("האם לאפס את כל התקדמות המשחק, החידות הפתורות והטיימר?")) {
+        gameState = {
+          solvedQuestions: {},
+          timerSecondsRemaining: 45 * 60,
+          timerRunning: false,
+          masterDials: ["", "", "", "", "", ""],
+          vaultUnlocked: false
+        };
+        saveState();
+        resetTimer();
+        renderRiddleCards();
+        renderBingoBoard();
+        renderTeamSelectorRibbon();
+        updatePowerGauge();
+        renderMasterDashboard();
+        showToast("המשחק אופס בהצלחה לקראת שיעור חדש!");
+      }
+    }
+
+    /* ==========================================================
+       9. CONFETTI GENERATOR (Zero dependencies)
+       ========================================================== */
+
+    let confettiParticles = [];
+    let confettiAnimationId = null;
+
+    function triggerConfettiBurst(count = 50) {
+      const canvas = document.getElementById('confetti-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const colors = ['#00f0ff', '#ffbe1a', '#ff2a85', '#00ff9d', '#9d4edd', '#ffffff'];
+
+      for (let i = 0; i < count; i++) {
+        confettiParticles.push({
+          x: canvas.width / 2 + (Math.random() - 0.5) * 300,
+          y: canvas.height / 3 + (Math.random() - 0.5) * 100,
+          vx: (Math.random() - 0.5) * 14,
+          vy: (Math.random() - 0.8) * 16,
+          size: Math.random() * 8 + 4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rotation: Math.random() * 360,
+          vrot: (Math.random() - 0.5) * 10,
+          life: 1,
+          decay: Math.random() * 0.015 + 0.008
+        });
+      }
+
+      if (!confettiAnimationId) {
+        animateConfetti();
+      }
+    }
+
+    function animateConfetti() {
+      const canvas = document.getElementById('confetti-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (let i = confettiParticles.length - 1; i >= 0; i--) {
+        const p = confettiParticles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.35; // gravity
+        p.rotation += p.vrot;
+        p.life -= p.decay;
+
+        if (p.life <= 0 || p.y > canvas.height) {
+          confettiParticles.splice(i, 1);
+          continue;
+        }
+
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate((p.rotation * Math.PI) / 180);
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = p.life;
+        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+        ctx.restore();
+      }
+
+      if (confettiParticles.length > 0) {
+        confettiAnimationId = requestAnimationFrame(animateConfetti);
+      } else {
+        confettiAnimationId = null;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+
+    /* ==========================================================
+       10. TOAST NOTIFICATIONS & PERSISTENCE
+       ========================================================== */
+
+    function showToast(msg) {
+      const container = document.getElementById('toast-container');
+      if (!container) return;
+
+      const toast = document.createElement('div');
+      toast.className = 'toast-msg';
+      toast.innerHTML = `<span>${msg}</span>`;
+
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+        toast.style.transition = 'all 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    async function saveState() {
+      try {
+        if (window.notebookAppApi && typeof window.notebookAppApi.setAppState === 'function') {
+          await window.notebookAppApi.setAppState(gameState);
+        }
+      } catch (e) {
+        // Safe storage suppression
+      }
+    }
+
+    async function loadSavedState() {
+      try {
+        if (window.notebookAppApi && typeof window.notebookAppApi.getAppState === 'function') {
+          const loaded = await window.notebookAppApi.getAppState();
+          if (loaded && typeof loaded === 'object') {
+            gameState = Object.assign(gameState, loaded);
+            renderBingoBoard();
+            renderRiddleCards();
+            renderTeamSelectorRibbon();
+            updatePowerGauge();
+            renderMasterDashboard();
+            updateTimerDisplay();
+          }
+        }
+      } catch (e) {
+        // Fallback to default
+      }
+    }
+  </script>
+</body>
+</html>
